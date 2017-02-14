@@ -112,18 +112,36 @@ StatusType GetTaskState( TaskType TaskID, TaskStateRefType State );
 //  Constants
 ////////////////////////////////////////////////////////////////////////////////
 
-/**Constant of data type TaskStateType for task state running.*/
+/**
+ * Constant of data type TaskStateType for task state running.
+ *
+ * @remark In the running state, the CPU is assigned to the task, so that its instructions can be executed. Only one task can be in this state at any point in time, while all the other states can be adopted simultaneously by several tasks.
+ */
 extern const TaskStateType RUNNING;
-/**Constant of data type TaskStateType for task state waiting.*/
+/**
+ * Constant of data type TaskStateType for task state waiting.
+ *
+ * @remark A task cannot continue execution because it shall wait for at least one event (see chapter 7, Event mechanism).
+ */
 extern const TaskStateType WAITING;
-/**Constant of data type TaskStateType for task state ready.*/
+/**
+ * Constant of data type TaskStateType for task state ready.
+ *
+ * @remark All functional prerequisites for a transition into the running state exist, and the task only waits for allocation of the processor. The scheduler decides which ready task is executed next. 
+ */
 extern const TaskStateType READY;
-/**Constant of data type TaskStateType for task state suspended.*/
+/**
+ * Constant of data type TaskStateType for task state suspended.
+ *
+ * @remark In the suspended state the task is passive and can be activated.
+ */
 extern const TaskStateType SUSPENDED;
-/**Constant of data type TaskType for a not defined task.*/
+/**
+ * Constant of data type TaskType for a not defined task.
+ */
 extern const TaskStateType INVALID_TASK;
 
-#define TASK(TaskName) StatusType Func##TaskName(void)
+#define TASK( TaskName ) StatusType Func##TaskName(void)
 
 
 #endif//TASKS_H
