@@ -1,0 +1,10 @@
+#define PLATFORM_HIGH 1
+#define PLATFORM_LOW 0
+
+#define PLATFORM_ON 1
+#define PLATFORM_OFF 0
+
+#define PLATFORM_INPUT 1
+#define PLATFORM_OUTPUT 0
+
+#define PLATFORM_NULL ((void *)0)

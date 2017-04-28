@@ -1,0 +1,14 @@
+OIL_VERSION = "2.5" "DESC_1";
+
+CPU Linux {
+	OS foo;
+	TASK bar {
+		STATUS = EXTENDED;
+		STARTUPHOOK = TRUE "does some weird shit";
+		ERRORHOOK = TRUE;
+		RESOURCE Rada {
+			FOOBAR = BAZ;
+		}
+	};
+
+} "DESC_2";

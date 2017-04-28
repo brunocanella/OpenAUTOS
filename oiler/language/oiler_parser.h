@@ -1,0 +1,12 @@
+#define OIL_VERSION                     1
+#define EQUAL                           2
+#define SEMICOLON                       3
+#define CPU                             4
+#define OPEN_BRACKET                    5
+#define CLOSE_BRACKET                   6
+#define LITERAL_STRING                  7
+#define LITERAL_INTEGER                 8
+#define LITERAL_DECIMAL                 9
+#define LITERAL_NAME                   10
+#define LITERAL_OBJECT                 11
+#define LITERAL_BOOLEAN                12

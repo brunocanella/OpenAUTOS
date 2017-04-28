@@ -1,0 +1,125 @@
+%include {
+#include <stdio.h>
+#include <assert.h>
+
+#include "globals.h"
+}
+
+%token_type { YYSTYPE }
+
+%syntax_error
+{
+    fprintf(stderr, "Error parsing command\n");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// OIL
+///////////////////////////////////////////////////////////////////////////////
+
+file ::= oil_version application foo .
+
+///////////////////////////////////////////////////////////////////////////////
+// VERSION
+///////////////////////////////////////////////////////////////////////////////
+
+%destructor oil_version { printf("destructor oil_version\n"); }
+oil_version ::= OIL_VERSION EQUAL version(A) description(B) SEMICOLON . {
+	printf( "OIL_VERSION = %s %s\n", A, B ? B : "" );
+}
+
+%type version { char* }
+%destructor version { printf( "destructor version: %s\n", $$ ); }
+version(A) ::= string(B) . {
+	A = B;
+    printf( "version: %s\n", A );
+}
+
+%type description { char* }
+%destructor description { printf( "destructor description: %s\n", $$ ); }
+description ::= . {
+    printf( "description: empty\n" );
+}
+description(A) ::= string(B) . {
+	A = B;
+    printf( "description: %s\n", A );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// APPLICATION
+///////////////////////////////////////////////////////////////////////////////
+
+%destructor description { printf("destructor application\n"); }
+application ::= .
+application ::= CPU name(A) OPEN_BRACKET object_list CLOSE_BRACKET description(B) SEMICOLON . {
+	printf( "application OK: name=%s description=%s\n", A, B );
+}
+
+object_list ::= . { printf( "object_list: empty\n" ); }
+object_list ::= object_list object_definition . { printf( "object_list: object_list object_definition\n" ); }
+
+object_definition ::= object_name(A) description SEMICOLON . {
+	printf( "object_name(1): %s=%s\n", A.type, A.name );
+}
+object_definition ::= object_name(A) OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON . {
+	printf( "object_name(2): %s=%s\n", A.type, A.name );
+}
+
+%type object_name {Object}
+object_name(Z) ::= object(A) name(B) . {
+	Z.type = A;
+	Z.name = B;
+}
+
+parameter_list ::= .
+parameter_list ::= parameter_list parameter .
+
+parameter ::= attribute_name(A) EQUAL attribute_value(B) description(C) SEMICOLON . {
+	printf( "parameter: attribute[%s] = value[%s] description[%s] ;\n", A, B, C );
+}
+
+%type attribute_name { char* }
+attribute_name(Z) ::= name(A) .		{ Z = A; }
+attribute_name(Z) ::= object(A) .	{ Z = A; }
+
+%type attribute_value { char* }
+attribute_value(Z) ::= name(A) .		{ Z = A; }
+attribute_value(Z) ::= boolean(A) .		{ Z = A; }
+attribute_value(Z) ::= string(A) .		{ Z = A; }
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+foo ::= .
+foo ::= integer .
+foo ::= decimal .
+
+%type string { char* }
+string(A) ::= LITERAL_STRING(B) . {
+    A = B.sval;
+}
+
+%type integer { int }
+integer(A) ::= LITERAL_INTEGER(B) . {
+    A = B.ival;
+}
+
+%type decimal { double }
+decimal(A) ::= LITERAL_DECIMAL(B) . {
+    A = B.dval;
+}
+
+%type name { char* }
+name(A) ::= LITERAL_NAME(B) . {	
+	A = B.sval;
+}
+
+%type object { char* }
+object(A) ::= LITERAL_OBJECT(B) . {
+	A = B.sval;
+}
+
+%type boolean { char* }
+boolean(A) ::= LITERAL_BOOLEAN(B) . {
+	A = B.sval;
+}
