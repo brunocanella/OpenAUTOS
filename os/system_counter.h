@@ -11,4 +11,8 @@ void TimeoutRoutineSystemCounter();
 
 void ResetSystemCounter();
 
+typedef void (*TimeoutCallbackSystemCounterType)();
+
+extern TimeoutCallbackSystemCounterType g_callback_timeoutsystemcounter;
+
 #endif//OS_SYSTEM_COUNTER_H

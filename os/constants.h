@@ -26,3 +26,7 @@
 #ifndef FALSE
 #define FALSE (!TRUE)
 #endif
+
+#define OS_RESET PLATFORM_RESET
+
+typedef void (*CallbackType)(void);

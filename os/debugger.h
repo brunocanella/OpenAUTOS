@@ -6,7 +6,6 @@
 #define LOGGER_DEBUG(x)
 #define LOGGER_ERROR(x)
 
-
 #elif defined(PLATFORM) &&  PLATFORM == LINUX
 
 #include <stdarg.h>

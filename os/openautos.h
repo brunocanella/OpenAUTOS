@@ -8,10 +8,10 @@
 #include "system_counter.h"
 #include "task.h"
 #include "task_context.h"
-#include "task_metadata.h"
 #include "types.h"
 
 #include "osek/os.h"
+#include "osek/tasks.h"
 
 #if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
 #include <xc.h>

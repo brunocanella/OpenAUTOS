@@ -10,8 +10,13 @@
 typedef PlatformTaskContextType TaskContextType;
 typedef PlatformTaskContextRefType TaskContextRefType;
 
-#define SaveTaskContext( TaskContextRef ) PlatformSaveTaskContext( (TaskContextRef) )
+#define SaveTaskContext(TaskContextRef) PlatformSaveTaskContext((TaskContextRef))
 
-#define LoadTaskContext( TaskContextRef ) PlatformLoadTaskContext( (TaskContextRef) )
+#if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
+#define LoadTaskContext(TaskContextRef,FuncNameStr) PlatformLoadTaskContext((TaskContextRef),FuncNameStr)
+#else
+#define LoadTaskContext(TaskContextRef) PlatformLoadTaskContext((TaskContextRef))
+#endif
+
 
 #endif//OS_TASK_CONTEXT_H

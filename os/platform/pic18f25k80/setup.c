@@ -8,7 +8,6 @@ void PlatformInitializeOscillator() {
     OSCTUNEbits.PLLEN = 1;
 }
 
-void PlatformSetup() {
+void PlatformSetup() {	
 	PlatformInitializeOscillator();
-	PlatformInitializeSystemCounter();	
 }

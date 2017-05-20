@@ -72,6 +72,7 @@ typedef TaskStateType* TaskStateRefType;
  * If E_OS_LIMIT is returned the activation is ignored.
  *
  * @param TaskID[in] Task reference
+ * 
  * @return [Standard] No error, E_OK.
  * @return [Extended] Too many task activations of TaskID, E_OS_LIMIT
  * @return [Extended] Task TaskID is invalid, E_OS_ID
@@ -81,8 +82,7 @@ typedef TaskStateType* TaskStateRefType;
 StatusType ActivateTask( TaskType TaskID );
 
 /**
- * This service causes the termination of the calling task. The calling task is
- * transferred from the running state into the suspended state.
+ * This service causes the termination of the calling task. The calling task is transferred from the running state into the suspended state.
  *
  * @remark An internal resource assigned to the calling task is automatically released. Other resources occupied by the task shall have been released before the call to TerminateTask. If a resource is still occupied in standard status the behaviour is undefined.
  * @remark If the call was successful, TerminateTask does not return to the call level and the status can not be evaluated. If the version with extended status is used, the service returns in case of error, and provides a status which can be evaluated in the application. If the service TerminateTask is called successfully, it enforces a rescheduling.
@@ -143,5 +143,16 @@ StatusType GetTaskID( TaskRefType TaskID );
  * @return [Extended] Task TaskID is invalid, E_OS_ID
  */
 StatusType GetTaskState( TaskType TaskID, TaskStateRefType State );
+
+/**
+ * If a higher-priority task is ready, the internal resource of the task is released, the current task is put into the ready state, its context is saved and the higher-priority task is executed. Otherwise the calling task is continued.
+ *
+ * @remark Rescheduling only takes place if the task an internal resource is assigned to the calling task during system generation. For these tasks, Schedule enables a processor assignment to other tasks with lower or equal priority than the ceiling priority of the internal resource and higher priority than the priority of the calling task in application-specific locations. When returning from Schedule, the internal resource has been taken again. This service has no influence on tasks with no internal resource assigned (preemptable tasks).
+ *
+ * @return [Standard] No error, E_OK.
+ * @return [Extended] Call at interrupt level, E_OS_CALLEVEL
+ * @return [Extended] Calling task occupies resources, E_OS_RESOURCE
+ */
+StatusType Schedule( void );
 
 #endif//OSEK_TASKS_H

@@ -1,115 +1,22 @@
+CLEAN SUCCESSFUL (total time: 55ms)
 make -f nbproject/Makefile-default.mk SUBPROJECTS= .build-conf
-make[1]: Entering directory '/home/bruno/Documents/UFSC/2016.2/ARA7562 - Sistemas Operacionais Embarcados/Workspace/NojentOS.X'
-make  -f nbproject/Makefile-default.mk dist/default/production/NojentOS.X.production.hex
-make[2]: Entering directory '/home/bruno/Documents/UFSC/2016.2/ARA7562 - Sistemas Operacionais Embarcados/Workspace/NojentOS.X'
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/main.p1  main.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/timers.p1  kernel/timers.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/linked_list.p1  kernel/linked_list.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/semaphore.p1  kernel/semaphore.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/dispatcher.p1  kernel/dispatcher.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/scheduler.p1  kernel/scheduler.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/memory.p1  kernel/memory.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/sa_baixo.p1  kernel/sa_baixo.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/nojentOS.p1  nojentOS.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/message_queue.p1  kernel/message_queue.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/sa.p1  kernel/sa.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/rs232.p1  kernel/rs232.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/delay.p1  kernel/delay.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/memoria_EEPROM.p1  kernel/memoria_EEPROM.c 
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8" --pass1  --chip=18F4520 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/kernel/task.p1  kernel/task.c 
-kernel/sa.c:288: warning: (345) unreachable code
-kernel/sa.c:295: warning: (345) unreachable code
-kernel/sa.c:302: warning: (345) unreachable code
-main.c:144: warning: (359) illegal conversion between pointer types
-pointer to const unsigned char -> pointer to unsigned char
-main.c:144: warning: (359) illegal conversion between pointer types
-pointer to const unsigned char -> pointer to unsigned char
-kernel/interrutps.h:26: warning: (361) function declared implicit int
-nojentOS.c:21: warning: (361) function declared implicit int
-"/home/bruno/Programs/microchip/xc8/v1.37/bin/xc8"  --chip=18F4520 -G -mdist/default/production/NojentOS.X.production.map  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"      --memorysummary dist/default/production/memoryfile.xml -odist/default/production/NojentOS.X.production.cof  build/default/production/main.p1 build/default/production/kernel/timers.p1 build/default/production/nojentOS.p1 build/default/production/kernel/dispatcher.p1 build/default/production/kernel/scheduler.p1 build/default/production/kernel/task.p1 build/default/production/kernel/memory.p1 build/default/production/kernel/linked_list.p1 build/default/production/kernel/semaphore.p1 build/default/production/kernel/message_queue.p1 build/default/production/kernel/delay.p1 build/default/production/kernel/sa_baixo.p1 build/default/production/kernel/sa.p1 build/default/production/kernel/rs232.p1 build/default/production/kernel/memoria_EEPROM.p1     
-Microchip MPLAB XC8 C Compiler (Free Mode) V1.37
-Build date: Mar 10 2016
-Part Support Version: 1.37
+make[1]: Entering directory '/home/bruno/Documents/UFSC/2016.2/ARA7513 - Projeto de Sistemas Embarcados/Workspace/HDW/TEST_PIC18F25K80.X'
+make  -f nbproject/Makefile-default.mk dist/default/production/TEST_PIC18F25K80.X.production.hex
+make[2]: Entering directory '/home/bruno/Documents/UFSC/2016.2/ARA7513 - Projeto de Sistemas Embarcados/Workspace/HDW/TEST_PIC18F25K80.X'
+"/opt/microchip/xc8/v1.38/bin/xc8" --pass1  --chip=18F25K80 -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib   --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"    -obuild/default/production/main.p1  main.c 
+"/opt/microchip/xc8/v1.38/bin/xc8"  --chip=18F25K80 -G -mdist/default/production/TEST_PIC18F25K80.X.production.map  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib --output=+mcof,-elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"      --memorysummary dist/default/production/memoryfile.xml -odist/default/production/TEST_PIC18F25K80.X.production.cof  build/default/production/main.p1     
+Microchip MPLAB XC8 C Compiler (Free Mode) V1.38
+Build date: Jun 30 2016
+Part Support Version: 1.38
 Copyright (C) 2016 Microchip Technology Inc.
 License type: Node Configuration
 
-:: advisory: (1233) Employing 18F4520 errata work-arounds:
-:: advisory: (1234)  * Corrupted fast interrupt shadow registers
 :: warning: (1273) Omniscient Code Generation not available in Free mode
-kernel/dispatcher.c:90: warning: (753) undefined shift (16 bits)
-kernel/sa.c:298: warning: (765) degenerate unsigned comparison
-kernel/timers.c:15: warning: (520) function "_timer0_init" is never called
-kernel/scheduler.c:19: warning: (520) function "_scheduler_round_robin" is never called
-kernel/linked_list.c:82: warning: (520) function "_linked_list_remove_last" is never called
-kernel/linked_list.c:108: warning: (520) function "_linked_list_remove_first" is never called
-kernel/linked_list.c:128: warning: (520) function "_linked_list_remove_all" is never called
-kernel/linked_list.c:138: warning: (520) function "_linked_list_get_by_index" is never called
-kernel/linked_list.c:154: warning: (520) function "_linked_list_get_last" is never called
-kernel/linked_list.c:159: warning: (520) function "_linked_list_get_first" is never called
-kernel/linked_list.c:163: warning: (520) function "_linked_list_get_size" is never called
-kernel/semaphore.c:10: warning: (520) function "_semaphore_wait" is never called
-kernel/semaphore.c:22: warning: (520) function "_semaphore_signal" is never called
-kernel/message_queue.c:9: warning: (520) function "_message_queue_read" is never called
-kernel/sa.c:12: warning: (520) function "_MEU_fgetc" is never called
-kernel/sa.c:33: warning: (520) function "_MEU_fputc" is never called
-kernel/sa.c:307: warning: (520) function "_MEU_ftell" is never called
-kernel/sa.c:312: warning: (520) function "_MEU_feof" is never called
-kernel/rs232.c:7: warning: (520) function "_inicializarUSART" is never called
-kernel/rs232.c:32: warning: (520) function "_USARTwrite" is never called
-kernel/rs232.c:38: warning: (520) function "_USARTwriteString" is never called
-kernel/rs232.c:45: warning: (520) function "_USARTread" is never called
-kernel/rs232.c:62: warning: (520) function "_USARTavailable" is never called
-kernel/rs232.c:67: warning: (520) function "_USARTenableRXInterrupt" is never called
-kernel/rs232.c:74: warning: (520) function "_USARTdisableRXInterrupt" is never called
-kernel/memoria_EEPROM.c:44: warning: (520) function "_config_to_write" is never called
-kernel/memoria_EEPROM.c:49: warning: (520) function "_config_to_read" is never called
-kernel/timers.c:55: warning: (1471) indirect function call via a NULL pointer ignored
-kernel/timers.c:55: warning: (759) expression generates no code
-kernel/interrutps.h:29: warning: (1464) number of arguments passed to function "_dispatcher_change_context_isr" does not match function's prototype
-kernel/linked_list.c:89: warning: (1498) pointer (linked_list_remove_last@a_head) in expression may have no targets
-kernel/linked_list.c:115: warning: (1498) pointer (linked_list_remove_first@a_head) in expression may have no targets
-kernel/linked_list.c:121: warning: (1498) pointer (linked_list_remove_first@a_head) in expression may have no targets
-kernel/semaphore.c:12: warning: (1498) pointer (semaphore_wait@handle) in expression may have no targets
-kernel/semaphore.c:15: warning: (1498) pointer (semaphore_wait@handle) in expression may have no targets
-kernel/semaphore.c:16: warning: (1498) pointer (semaphore_wait@handle) in expression may have no targets
-kernel/semaphore.c:24: warning: (1498) pointer (semaphore_signal@handle) in expression may have no targets
-kernel/semaphore.c:26: warning: (1498) pointer (semaphore_signal@handle) in expression may have no targets
-kernel/semaphore.c:29: warning: (1498) pointer (semaphore_signal@handle) in expression may have no targets
-kernel/message_queue.c:29: warning: (1498) pointer (message_queue_read@buff) in expression may have no targets
-kernel/sa_baixo.c:32: warning: (751) arithmetic overflow in constant expression
-kernel/sa_baixo.c:35: warning: (751) arithmetic overflow in constant expression
-kernel/sa_baixo.c:166: warning: (751) arithmetic overflow in constant expression
-kernel/sa_baixo.c:171: warning: (751) arithmetic overflow in constant expression
-kernel/sa.c:29: warning: (1498) pointer (MEU_fgetc@stream) in expression may have no targets
-kernel/sa.c:50: warning: (1498) pointer (MEU_fputc@stream) in expression may have no targets
-kernel/sa.c:80: warning: (1498) pointer (MEU_fputc@stream) in expression may have no targets
-kernel/sa.c:83: warning: (1498) pointer (MEU_fputc@stream) in expression may have no targets
-:: warning: (1311) missing configuration setting for config word 0x300002; using default
-:: warning: (1311) missing configuration setting for config word 0x300006; using default
-:: warning: (1311) missing configuration setting for config word 0x300008; using default
-:: warning: (1311) missing configuration setting for config word 0x300009; using default
-:: warning: (1311) missing configuration setting for config word 0x30000A; using default
-:: warning: (1311) missing configuration setting for config word 0x30000B; using default
-:: warning: (1311) missing configuration setting for config word 0x30000C; using default
-:: warning: (1311) missing configuration setting for config word 0x30000D; using default
 
 Memory Summary:
-    Program space        used  3686h ( 13958) of  8000h bytes   ( 42.6%)
-    Data space           used   4C3h (  1219) of   600h bytes   ( 79.4%)
+    Program space        used   108h (   264) of  8000h bytes   (  0.8%)
+    Data space           used    10h (    16) of   E41h bytes   (  0.4%)
     Configuration bits   used     7h (     7) of     7h words   (100.0%)
-    EEPROM space         used     0h (     0) of   100h bytes   (  0.0%)
+    EEPROM space         used     0h (     0) of   400h bytes   (  0.0%)
     ID Location space    used     8h (     8) of     8h bytes   (100.0%)
-    Data stack space     used     0h (     0) of    A2h bytes   (  0.0%)
-
-
-You have compiled in FREE mode.
-Using Omnicient Code Generation that is available in PRO mode,
-you could have produced up to 60% smaller and 400% faster code.
-See http://www.microchip.com/MPLABXCcompilers for more information.
-
-make[2]: Leaving directory '/home/bruno/Documents/UFSC/2016.2/ARA7562 - Sistemas Operacionais Embarcados/Workspace/NojentOS.X'
-make[1]: Leaving directory '/home/bruno/Documents/UFSC/2016.2/ARA7562 - Sistemas Operacionais Embarcados/Workspace/NojentOS.X'
-
-BUILD SUCCESSFUL (total time: 4s)
-Loading code from /home/bruno/Documents/UFSC/2016.2/ARA7562 - Sistemas Operacionais Embarcados/Workspace/NojentOS.X/dist/default/production/NojentOS.X.production.hex...
-Loading completed
+    Data stack space     used     0h (     0) of   DE1h bytes   (  0.0%)

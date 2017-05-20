@@ -6,6 +6,11 @@
 #error Platform not declared
 #endif
 
+#include "system_counter.h"
+
 void Setup() {
+	// TODO: Initialize Tasks
 	PlatformSetup();
+	//
+	InitializeSystemCounter();
 }

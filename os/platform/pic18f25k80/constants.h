@@ -8,3 +8,5 @@
 #define PLATFORM_OUTPUT 0
 
 #define PLATFORM_NULL ((void *)0)
+
+#define PLATFORM_RESET() RESET()

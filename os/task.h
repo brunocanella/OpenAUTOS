@@ -10,14 +10,15 @@ extern const uint8_t TASKS_TOTAL;
 /**Type for task priority*/
 typedef uint8_t TaskPriorityType;
 /**Type for task callback method*/
-typedef void (*TaskCallbackType)(void);
+typedef CallbackType TaskCallbackType;
 
-typedef struct {
+typedef struct STaskDataType {
 	TaskType id;
 	TaskPriorityType priority;	
 	TaskStateType state;
 	TaskContextType context;
 	TaskCallbackType callback;
+	struct STaskDataType* next_task_same_priority;
 } TaskDataType;
 
 typedef TaskDataType* TaskDataRefType;
@@ -33,6 +34,7 @@ extern TaskDataRefType g_active_task;
 //
 // OpenAUTOS
 // 
+void IdleTask_Callback();
 void InitializeIdleTask();
 
 #endif//OS_TASK_H

@@ -10,11 +10,13 @@ typedef uint8_t TaskActivationsType;
 typedef struct {
 	TaskType id;
 	TaskActivationsType activations;
-	TaskActivationsType current_active;	
+	TaskActivationsType current_active;
 } TaskMetaDataType;
 
 typedef TaskMetaDataType* TaskMetaDataRefType;
 
 extern TaskMetaDataType g_task_metadata[TASKS_TOTAL_TYPES];
+
+TaskMetaDataRefType GetTaskMetaDataRef( TaskType TaskID );
 
 #endif//OS_TASK_METADATA_H

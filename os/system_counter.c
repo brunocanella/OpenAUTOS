@@ -6,19 +6,24 @@
 #error Platform not declared
 #endif
 
+#include "constants.h"
+
+TimeoutCallbackSystemCounterType g_callback_timeoutsystemcounter;
+
 void InitializeSystemCounter() {
 	PlatformInitializeSystemCounter();
-	PlatformResetSystemCounter();	
+	PlatformResetSystemCounter();
+	g_callback_timeoutsystemcounter = ResetSystemCounter;
 }
 
 uint8_t HasInterruptSystemCounter() {
 	return PlatformHasInterruptSystemCounter();
 }
 
-// TODO Arrumar essa parada aqui
-#include <xc.h>
 void TimeoutRoutineSystemCounter() {
-	PORTBbits.RB0 = !LATBbits.LATB0;
+	if( g_callback_timeoutsystemcounter ) {
+		g_callback_timeoutsystemcounter();
+	}
 }
 
 void ResetSystemCounter() {

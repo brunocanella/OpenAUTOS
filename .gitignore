@@ -1,3 +1,7 @@
 # Ignores the build directory
 build/
 
+/OpenAUTOS.X/nbproject/private/
+/OpenAUTOS.X/dist/default/
+/OpenAUTOS.X/build/
+
