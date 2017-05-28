@@ -58,4 +58,4 @@ build: compile
 clean:
 	rm -rf build
 
-.PHONY: build compile os osek app test clean
+.PHONY: all build compile os osek app test clean

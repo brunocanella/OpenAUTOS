@@ -19,5 +19,5 @@ void PlatformInitializeSystemCounter() {
 }
 
 uint8_t PlatformHasInterruptSystemCounter() {
-	return INTCONbits.TMR0IE && INTCONbits.TMR0IF;
+	return (uint8_t)(INTCONbits.TMR0IE && INTCONbits.TMR0IF);
 }

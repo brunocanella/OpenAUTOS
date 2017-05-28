@@ -6,7 +6,7 @@ StatusType ResetTaskContext( PlatformTaskContextRefType Context, CallbackType Ca
 	Context->bsr = 0;
 	Context->status = 0;	
 	// Erasing the context stack
-	uint24_t* l_stack_ptr = Context->stack;
+	uint32_t* l_stack_ptr = Context->stack;
 	for( uint8_t i = 0; i < PLATFORM_CONTEXT_STACK_SIZE; i++ ) {
 		l_stack_ptr[i] = 0;
 	}

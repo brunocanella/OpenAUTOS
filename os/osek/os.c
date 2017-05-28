@@ -41,7 +41,7 @@ void StartOS( AppModeType Mode ) {
 	// Carregando o callback
 	g_active_task->context.stack_top = 0;	
     PUSH();
-    uint24_t l_callback = (uint24_t) g_active_task->callback;
+    uint32_t l_callback = (uint32_t) g_active_task->callback;
     stack_u = l_callback >> 16;
     stack_h = l_callback >>  8;
     stack_l = l_callback >>  0;

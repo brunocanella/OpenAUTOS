@@ -2,8 +2,8 @@
 #define OSEK_RESOURCES_H
 
 #include "types.h"
+#include "../resource.h"
 
-typedef uint8_t ResourceType;
 
 /**
  * DeclareResource serves as an external declaration of a resource. The function and use of this service are similar to that of the external declaration of variables.
@@ -42,7 +42,6 @@ StatusType GetResource( ResourceType ResID );
  * @return [Extended] Resource <ResID> is invalid, E_OS_ID.
  * @return Attempt to release a resource which is not occupied by any task or ISR, or another resource shall be released before, E_OS_NOFUNC.
  * @return Attempt to release a resource which has a lower ceiling priority than the statically assigned priority of the calling task or interrupt routine, E_OS_ACCESS.
-
  */
 StatusType ReleaseResource( ResourceType ResID );
 

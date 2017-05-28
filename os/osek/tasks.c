@@ -10,7 +10,7 @@ StatusType ActivateTask_Main( TaskType TaskID ) {
     // Searches for the task with the given ID
     uint8_t l_task_id_found = FALSE;
     TaskDataRefType l_task_data_ref = NULL;
-    for( int8_t i = 0; i < TASKS_TOTAL; i++ ) {
+    for( uint8_t i = 0; i < TASKS_TOTAL; i++ ) {
         if( g_tasks[i].id == TaskID ) {
             l_task_id_found = TRUE;
             if( g_tasks[i].state == SUSPENDED ) {
@@ -185,30 +185,9 @@ StatusType Schedule( void ) {
         l_context = &(g_active_task->context);
 #if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
         LoadTaskContext( l_context,"Schedule");
-        // do {                                                                                        
-        //     PlatformTaskContextStackRefType stack = (l_context->stack);            // Shortcut to the stack
-        //     while( l_context->stack_top > 0 ) {                                    // Loops while there are values to push to the Stack
-        //         uint8_t i = --l_context->stack_top;                                //     Reduces the size of the stack and then gets the index position
-        //         PUSH();                                                                 //     Moves the uC stack position to the next available
-        //         uint24_t callback = stack[i];                                           
-        //         uint8_t tosu = (uint8_t)(callback >> 16);                               
-        //         uint8_t tosh = (uint8_t)(callback >>  8);                               
-        //         uint8_t tosl = (uint8_t)(callback >>  0);                               
-        //         asm("MOVF Schedule@tosu,w");                                       
-        //         asm("MOVWF TOSU");                                                      
-        //         asm("MOVF Schedule@tosh,w");                                       
-        //         asm("MOVWF TOSH");                                                      
-        //         asm("MOVF Schedule@tosl,w");                                       
-        //         asm("MOVWF TOSL");                                                      
-        //     }                                                                           
-        //     WREG = l_context->work;                                                // Loading the Work Register
-        //     BSR = l_context->bsr;                                                  // Loading Bank Select Register
-        //     STATUS = l_context->status;                                            // Loading Status Register
-        // } while(0);
 #else
 #error Platform not defined!
-#endif        
-
+#endif
         EnableAllInterrupts();
     }
 

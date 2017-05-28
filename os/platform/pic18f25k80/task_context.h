@@ -12,7 +12,7 @@
 /**Retrives the value part of the uController Stack */
 #define uControllerStackValue() ( STKPTRbits.STKPTR )
 
-typedef uint24_t PlatformTaskContextStackType;
+typedef uint32_t PlatformTaskContextStackType;
 typedef PlatformTaskContextStackType* PlatformTaskContextStackRefType;
 
 typedef struct {
@@ -71,7 +71,7 @@ do {                                                                            
     while( TaskContextRef->stack_top > 0 ) {                                    \// Loops while there are values to push to the Stack
         uint8_t i = --TaskContextRef->stack_top;                                \//     Reduces the size of the stack and then gets the index position
         PUSH();                                                                 \//     Moves the uC stack position to the next available
-        uint24_t callback = stack[i];                                           \
+        uint32_t callback = stack[i];                                           \
         uint8_t tosu = (uint8_t)(callback >> 16);                               \
         uint8_t tosh = (uint8_t)(callback >>  8);                               \
         uint8_t tosl = (uint8_t)(callback >>  0);                               \

@@ -32,7 +32,7 @@ asm("GLOBAL _InitializeIdleTask, _IdleTask_Callback");
  * @param TaskState If given a value different from 0, filters by the task state
  */
 TaskDataRefType GetTaskRefById( TaskType TaskId, TaskStateType TaskState ) {
-	for( int i = 0; i < TASKS_TOTAL; i++ ) {
+	for( uint8_t i = 0; i < TASKS_TOTAL; i++ ) {
 		if( g_tasks[i].id == TaskId && ( !TaskState || g_tasks[i].state == TaskState ) ) {
 			return &g_tasks[i];
 		}

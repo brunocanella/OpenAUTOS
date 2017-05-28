@@ -45,17 +45,17 @@
           </logicalFolder>
         </logicalFolder>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/task.h</itemPath>
+        <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/resource.c</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/types.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/task_context.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/system_counter.h</itemPath>
-        <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/task_metadata.c</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/openautos.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/system_counter.c</itemPath>
-        <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/task_metadata.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/setup.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/debugger.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/setup.c</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/task.c</itemPath>
+        <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/resource.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/constants.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/isr.h</itemPath>
         <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/interrupts.h</itemPath>
