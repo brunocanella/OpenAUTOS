@@ -42,9 +42,9 @@ StatusType ActivateTask( TaskType TaskID ) {
         return l_status;
     }
     // Finally, calls the scheduler to see if the new task will take over
-    Schedule();
-
-    return E_OK;
+    StatusType l_status = E_OK;
+    l_status = Schedule();
+    return l_status;
 }
 
 StatusType TerminateTask_Main( void ) {
@@ -72,9 +72,9 @@ StatusType TerminateTask( void ) {
         return l_status;
     }
 
-    Schedule();
- 
-    return E_OK; 
+    StatusType l_status = E_OK;
+    l_status = Schedule();
+    return l_status;
 }
 
 StatusType ChainTask( TaskType TaskID ) {
@@ -90,9 +90,9 @@ StatusType ChainTask( TaskType TaskID ) {
         return l_status;
     }
 
-    Schedule();
- 
-    return E_OK; 
+    StatusType l_status = E_OK;
+    l_status = Schedule();
+    return l_status;
 
     // @remark If the succeeding task is identical with the current task, this does not result in multiple requests. 
     // The task is not transferred to the suspended state, but will immediately become ready again.

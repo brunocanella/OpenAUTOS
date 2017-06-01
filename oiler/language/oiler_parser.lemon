@@ -48,7 +48,7 @@ description(A) ::= string(B) . {
 // APPLICATION
 ///////////////////////////////////////////////////////////////////////////////
 
-%destructor description { printf("destructor application\n"); }
+%destructor application { printf("destructor application\n"); }
 application ::= .
 application ::= CPU name(A) OPEN_BRACKET object_list CLOSE_BRACKET description(B) SEMICOLON . {
 	printf( "application OK: name=%s description=%s\n", A, B );

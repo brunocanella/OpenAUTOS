@@ -75,11 +75,14 @@ do {                                                                            
         uint8_t tosu = (uint8_t)(callback >> 16);                               \
         uint8_t tosh = (uint8_t)(callback >>  8);                               \
         uint8_t tosl = (uint8_t)(callback >>  0);                               \
-        asm("MOVF "FuncNameStr"@tosu,w");                                       \
+        asm("BANKSEL("FuncNameStr"@tosu)");                                     \
+        asm("MOVF (("FuncNameStr"@tosu) and 0FFh),w");                          \
         asm("MOVWF TOSU");                                                      \
-        asm("MOVF "FuncNameStr"@tosh,w");                                       \
+        asm("BANKSEL("FuncNameStr"@tosh)");                                     \
+        asm("MOVF (("FuncNameStr"@tosh) and 0FFh),w");                          \
         asm("MOVWF TOSH");                                                      \
-        asm("MOVF "FuncNameStr"@tosl,w");                                       \
+        asm("BANKSEL("FuncNameStr"@tosl)");                                     \
+        asm("MOVF (("FuncNameStr"@tosl) and 0FFh),w");                          \
         asm("MOVWF TOSL");                                                      \
     }                                                                           \
     WREG = TaskContextRef->work;                                                \// Loading the Work Register

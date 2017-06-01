@@ -13,11 +13,6 @@ AppModeType GetActiveApplicationMode( void ) {
 
 #include "../task.h"
 
-
-static bank0 uint8_t stack_u;
-static bank0 uint8_t stack_h;
-static bank0 uint8_t stack_l;
-
 void StartOS( AppModeType Mode ) {
 	//TODO Treatment for AppMode
 	
@@ -35,6 +30,7 @@ void StartOS( AppModeType Mode ) {
             g_active_task = l_curr;
         }
     }
+    g_active_task->state = RUNNING;
 
     // Limpando a pilha
 	while( uControllerStackValue() > 0 ) { POP(); }
@@ -42,15 +38,18 @@ void StartOS( AppModeType Mode ) {
 	g_active_task->context.stack_top = 0;	
     PUSH();
     uint32_t l_callback = (uint32_t) g_active_task->callback;
-    stack_u = l_callback >> 16;
-    stack_h = l_callback >>  8;
-    stack_l = l_callback >>  0;
-    asm("NOP");
-    asm("MOVF _stack_u,w");
+    volatile uint8_t l_tos;    
+    l_tos = l_callback >> 16;
+    asm("BANKSEL(StartOS@l_tos)");
+    asm("MOVF ((StartOS@l_tos) and 0FFh),w");
     asm("MOVWF TOSU");
-    asm("MOVF _stack_h,w");
+    l_tos = l_callback >>  8;
+    asm("BANKSEL(StartOS@l_tos)");
+    asm("MOVF ((StartOS@l_tos) and 0FFh),w");
     asm("MOVWF TOSH");
-    asm("MOVF _stack_l,w");
+    l_tos = l_callback >>  0;    
+    asm("BANKSEL(StartOS@l_tos)");
+    asm("MOVF ((StartOS@l_tos) and 0FFh),w");
     asm("MOVWF TOSL");
 
     EnableAllInterrupts();
