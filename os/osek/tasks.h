@@ -54,9 +54,9 @@ typedef TaskStateType* TaskStateRefType;
  * function and use of this service are similar to that of the external
  * declaration of variables.
  */
-#define DeclareTask( TaskIdentifier ) extern Task##TaskIdentifier()
+#define DeclareTask( TaskName, TaskID ) const TaskType TaskType_##TaskName = (TaskID)
 
-#define TASK( TaskName ) StatusType Func##TaskName(void)
+#define TASK( TaskName ) void TASK_FUNC_##TaskName(void)
 
 ////////////////////////////////////////////////////////////////////////////////
 //  System Services

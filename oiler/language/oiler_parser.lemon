@@ -1,8 +1,33 @@
 %include {
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "globals.h"
+
+#include "oiler_parser.h"
+
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+
+#define debug_print(...) do { if (DEBUG) fprintf(stdout, ##__VA_ARGS__); } while (0)
+#define warning_print(...) do { fprintf(stdout, ##__VA_ARGS__); } while (0)	
+
+#define OBJECT_NONE 0
+#define OBJECT_OS 1
+#define OBJECT_TASK 2
+#define OBJECT_RESOURCE 3
+
+void InitializeResource( Resource* a_resource, const char a_name[] ) {
+	strcpy( a_resource->name, a_name );
+	a_resource->type = RESOURCE_TYPE_UNDEFINED; 
+	a_resource->priority = 0;	
+}
+
+
+int g_current_object = OBJECT_NONE;
+Resource* g_current_resource = NULL;
 }
 
 %token_type { YYSTYPE }
@@ -10,89 +35,183 @@
 %syntax_error
 {
     fprintf(stderr, "Error parsing command\n");
+	int n = sizeof( yyTokenName ) / sizeof( yyTokenName[0] );
+	int i;
+	for( i = 0; i < n; ++i ) {
+		int a = yy_find_shift_action( yypParser, (YYCODETYPE)i );
+		if( a < YYNSTATE + YYNRULE ) {
+			printf( "\tpossible token: %s\n", yyTokenName[i] );
+		}
+	}
 }
+
+%extra_argument { OS* os }
 
 ///////////////////////////////////////////////////////////////////////////////
 // OIL
 ///////////////////////////////////////////////////////////////////////////////
 
-file ::= oil_version application foo .
+file ::= oil_version application .
 
 ///////////////////////////////////////////////////////////////////////////////
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
 
-%destructor oil_version { printf("destructor oil_version\n"); }
+%destructor oil_version { debug_print("destructor oil_version\n"); }
 oil_version ::= OIL_VERSION EQUAL version(A) description(B) SEMICOLON . {
-	printf( "OIL_VERSION = %s %s\n", A, B ? B : "" );
+	debug_print( "OIL_VERSION = %s %s\n", A, B ? B : "" );
 }
 
 %type version { char* }
-%destructor version { printf( "destructor version: %s\n", $$ ); }
+%destructor version { debug_print( "destructor version: %s\n", $$ ); }
 version(A) ::= string(B) . {
 	A = B;
-    printf( "version: %s\n", A );
+    debug_print( "version: %s\n", A );
 }
 
 %type description { char* }
-%destructor description { printf( "destructor description: %s\n", $$ ); }
+%destructor description { debug_print( "destructor description: %s\n", $$ ); }
 description ::= . {
-    printf( "description: empty\n" );
+    debug_print( "description: empty\n" );
 }
 description(A) ::= string(B) . {
 	A = B;
-    printf( "description: %s\n", A );
+    debug_print( "description: %s\n", A );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // APPLICATION
 ///////////////////////////////////////////////////////////////////////////////
 
-%destructor application { printf("destructor application\n"); }
+%destructor application { debug_print("destructor application\n"); }
 application ::= .
 application ::= CPU name(A) OPEN_BRACKET object_list CLOSE_BRACKET description(B) SEMICOLON . {
-	printf( "application OK: name=%s description=%s\n", A, B );
+	debug_print( "application OK: name=%s description=%s\n", A, B );
 }
 
-object_list ::= . { printf( "object_list: empty\n" ); }
-object_list ::= object_list object_definition . { printf( "object_list: object_list object_definition\n" ); }
+object_list ::= object_list object_definition . { debug_print( "object_list: object_list object_definition\n" ); }
+object_list ::= . { debug_print( "object_list: empty\n" ); }
 
 object_definition ::= object_name(A) description SEMICOLON . {
-	printf( "object_name(1): %s=%s\n", A.type, A.name );
+	debug_print( "object_definition(1): %s=%s\n", A.type, A.name );
 }
 object_definition ::= object_name(A) OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON . {
-	printf( "object_name(2): %s=%s\n", A.type, A.name );
+	debug_print( "object_definition(2): %s=%s\n", A.type, A.name );
 }
 
 %type object_name {Object}
 object_name(Z) ::= object(A) name(B) . {
 	Z.type = A;
 	Z.name = B;
+	debug_print( "object_name: %s=%s\n", A, B );
+	if( strcmp(A, "OS") == 0 ) {
+		g_current_object = OBJECT_OS;
+	} else if( strcmp(A, "TASK") == 0 ) {
+		g_current_object = OBJECT_TASK;
+		Task* l_task = &os->tasks[os->task_count];
+		os->task_count++;
+		strcpy( l_task->name, B );
+	} else if( strcmp(A, "RESOURCE") == 0 ) {
+		g_current_object = OBJECT_RESOURCE;
+		Resource* l_resource = NULL;
+		// Check if resource was already created
+		int i;
+		for( i = 0; i < os->resource_count; i++ ) {
+			if( strcmp( os->resources[i].name, B ) == 0 ) {
+				l_resource = &os->resources[i];
+				break;
+			}
+		}
+		// Create a new resource, in case it doesn't exist yet.
+		if( l_resource == NULL ) {
+			l_resource = &os->resources[os->resource_count];
+			os->resource_count++;
+			InitializeResource( l_resource, B );		
+		}
+		g_current_resource = l_resource;
+	}
 }
 
 parameter_list ::= .
 parameter_list ::= parameter_list parameter .
 
-parameter ::= attribute_name(A) EQUAL attribute_value(B) description(C) SEMICOLON . {
-	printf( "parameter: attribute[%s] = value[%s] description[%s] ;\n", A, B, C );
+parameter ::= parameter_main parameter_sublist description SEMICOLON .
+parameter_main ::= attribute_name(A) EQUAL attribute_value(B) . {
+	if( B.type == LITERAL_INTEGER ) {
+		debug_print( "parameter: attribute[%s] = value[%i];\n", A, B.value.ival );
+	} else if( B.type == LITERAL_DECIMAL ) {
+		debug_print( "parameter: attribute[%s] = value[%f];\n", A, B.value.dval );
+	} else {
+		debug_print( "parameter: attribute[%s] = value[%s];\n", A, B.value.sval );
+	}
+	if( g_current_object == OBJECT_TASK ) {
+		Task* l_task = &os->tasks[os->task_count-1];
+		if( strcmp( A, "PRIORITY" ) == 0 ) {
+			l_task->priority = B.value.ival;
+		} else if( strcmp( A, "SCHEDULE" ) == 0 ) {
+			l_task->schedule = strcmp( B.value.sval, "FULL" ) == 0 ? 1 : 0;
+		} else if( strcmp( A, "ACTIVATION" ) == 0 ) {
+			l_task->activation = B.value.ival;
+		} else if( strcmp( A, "AUTOSTART" ) == 0 ) {
+			l_task->autostart = strcmp( B.value.sval, "TRUE" ) == 0 ? 1 : 0;
+			// TODO: Implement this
+		} else if( strcmp( A, "RESOURCE" ) == 0 ) {
+			// Setting up or finding the resource
+			Resource* l_resource = NULL;
+			int i;
+			for( i = 0; i < os->resource_count; i++ ) {
+				if( strcmp( os->resources[i].name, B.value.sval ) == 0 ) {
+					l_resource = &os->resources[i];
+					break;
+				}
+			}
+			if( l_resource == NULL ) {
+				l_resource = &os->resources[os->resource_count];				
+				os->resource_count++;
+				InitializeResource( l_resource, B.value.sval );
+			}
+			// Linking the resource to the task
+			l_task->resources[l_task->resource_count] = l_resource;
+			l_task->resource_count++;
+		} else {
+			warning_print( "WARNING: TASK PROPERTY[%s] NOT SUPPORTED!!!\n", A );
+		}
+	} else if( g_current_object == OBJECT_RESOURCE ) {		
+		if( g_current_resource == NULL ) {
+			warning_print( "WARNING: RESOURCE NOT FOUND!!!\n" );
+		}
+		if( strcmp( A, "RESOURCEPROPERTY" ) == 0 ) {
+			if( strcmp( B.value.sval, "STANDARD" ) == 0 ) {
+				g_current_resource->type = RESOURCE_TYPE_STANDARD;
+			} else if( strcmp( B.value.sval, "LINKED" ) == 0 ) {
+				g_current_resource->type = RESOURCE_TYPE_LINKED;				
+			} else if( strcmp( B.value.sval, "INTERNAL" ) == 0 ) {
+				g_current_resource->type = RESOURCE_TYPE_INTERNAL;
+			} else {
+				warning_print( "WARNING: RESOURCE->RESOURCEPROPERTY = %s NOT SUPPORTED!!!\n", B.value.sval );
+			}			
+		} else {
+			warning_print( "WARNING: RESOURCE PROPERTY[%s] NOT SUPPORTED!!!\n", A );
+		}
+	}
 }
+parameter_sublist ::= . { debug_print( "FOO\n" ); }
+parameter_sublist ::= OPEN_BRACKET parameter_list CLOSE_BRACKET . { debug_print( "BAR\n" ); }
 
 %type attribute_name { char* }
 attribute_name(Z) ::= name(A) .		{ Z = A; }
 attribute_name(Z) ::= object(A) .	{ Z = A; }
 
-%type attribute_value { char* }
-attribute_value(Z) ::= name(A) .		{ Z = A; }
-attribute_value(Z) ::= boolean(A) .		{ Z = A; }
-attribute_value(Z) ::= string(A) .		{ Z = A; }
+%type attribute_value { LiteralValue }
+attribute_value(Z) ::= name(A) .		{ Z.value.sval = A; Z.type = LITERAL_NAME; }
+attribute_value(Z) ::= boolean(A) .		{ Z.value.sval = A; Z.type = LITERAL_BOOLEAN; }
+attribute_value(Z) ::= string(A) .		{ Z.value.sval = A; Z.type = LITERAL_STRING; }
+attribute_value(Z) ::= integer(A) .		{ Z.value.ival = A; Z.type = LITERAL_INTEGER; }
+attribute_value(Z) ::= decimal(A) .		{ Z.value.dval = A; Z.type = LITERAL_DECIMAL; }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-foo ::= .
-foo ::= integer .
-foo ::= decimal .
 
 %type string { char* }
 string(A) ::= LITERAL_STRING(B) . {

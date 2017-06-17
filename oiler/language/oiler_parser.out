@@ -1,46 +1,75 @@
 State 0:
-          file ::= * oil_version application foo
+          file ::= * oil_version application
           oil_version ::= * OIL_VERSION EQUAL version description SEMICOLON
 
-                   OIL_VERSION shift  17
+                   OIL_VERSION shift  19
                           file accept
-                   oil_version shift  13
+                   oil_version shift  14
 
 State 1:
-          parameter ::= attribute_name EQUAL * attribute_value description SEMICOLON
+          parameter_main ::= attribute_name EQUAL * attribute_value
           attribute_value ::= * name
           attribute_value ::= * boolean
           attribute_value ::= * string
+          attribute_value ::= * integer
+          attribute_value ::= * decimal
           string ::= * LITERAL_STRING
+          integer ::= * LITERAL_INTEGER
+          decimal ::= * LITERAL_DECIMAL
           name ::= * LITERAL_NAME
           boolean ::= * LITERAL_BOOLEAN
 
-                LITERAL_STRING shift  41
-                  LITERAL_NAME shift  32
-               LITERAL_BOOLEAN shift  31
-                        string shift  33
-                          name shift  35
-               attribute_value shift  8
-                       boolean shift  34
+                LITERAL_STRING shift  49
+               LITERAL_INTEGER shift  37
+               LITERAL_DECIMAL shift  36
+                  LITERAL_NAME shift  35
+               LITERAL_BOOLEAN shift  34
+                        string shift  40
+                          name shift  42
+               attribute_value shift  43
+                       boolean shift  41
+                       integer shift  39
+                       decimal shift  38
 
 State 2:
+          parameter_list ::= parameter_list * parameter
+          parameter ::= * parameter_main parameter_sublist description SEMICOLON
+          parameter_main ::= * attribute_name EQUAL attribute_value
+          parameter_sublist ::= OPEN_BRACKET parameter_list * CLOSE_BRACKET
+          attribute_name ::= * name
+          attribute_name ::= * object
+          name ::= * LITERAL_NAME
+          object ::= * LITERAL_OBJECT
+
+                 CLOSE_BRACKET shift  33
+                  LITERAL_NAME shift  35
+                LITERAL_OBJECT shift  30
+                          name shift  32
+                        object shift  31
+                     parameter shift  45
+                parameter_main shift  12
+                attribute_name shift  20
+
+State 3:
           object_definition ::= object_name OPEN_BRACKET parameter_list * CLOSE_BRACKET description SEMICOLON
           parameter_list ::= parameter_list * parameter
-          parameter ::= * attribute_name EQUAL attribute_value description SEMICOLON
+          parameter ::= * parameter_main parameter_sublist description SEMICOLON
+          parameter_main ::= * attribute_name EQUAL attribute_value
           attribute_name ::= * name
           attribute_name ::= * object
           name ::= * LITERAL_NAME
           object ::= * LITERAL_OBJECT
 
                  CLOSE_BRACKET shift  9
-                  LITERAL_NAME shift  32
-                LITERAL_OBJECT shift  28
-                          name shift  30
-                        object shift  29
-                     parameter shift  37
-                attribute_name shift  19
+                  LITERAL_NAME shift  35
+                LITERAL_OBJECT shift  30
+                          name shift  32
+                        object shift  31
+                     parameter shift  45
+                parameter_main shift  12
+                attribute_name shift  20
 
-State 3:
+State 4:
           application ::= CPU name OPEN_BRACKET object_list * CLOSE_BRACKET description SEMICOLON
           object_list ::= object_list * object_definition
           object_definition ::= * object_name description SEMICOLON
@@ -49,25 +78,10 @@ State 3:
           object ::= * LITERAL_OBJECT
 
                  CLOSE_BRACKET shift  10
-                LITERAL_OBJECT shift  28
-             object_definition shift  40
+                LITERAL_OBJECT shift  30
+             object_definition shift  48
                    object_name shift  5
                         object shift  11
-
-State 4:
-          file ::= oil_version application * foo
-     (20) foo ::= *
-          foo ::= * integer
-          foo ::= * decimal
-          integer ::= * LITERAL_INTEGER
-          decimal ::= * LITERAL_DECIMAL
-
-               LITERAL_INTEGER shift  45
-               LITERAL_DECIMAL shift  44
-                           foo shift  24
-                       integer shift  47
-                       decimal shift  46
-                     {default} reduce 20
 
 State 5:
       (3) description ::= *
@@ -76,10 +90,10 @@ State 5:
           object_definition ::= object_name * OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON
           string ::= * LITERAL_STRING
 
-                  OPEN_BRACKET shift  14
-                LITERAL_STRING shift  41
-                   description shift  21
-                        string shift  43
+                  OPEN_BRACKET shift  16
+                LITERAL_STRING shift  49
+                   description shift  23
+                        string shift  51
                      {default} reduce 3
 
 State 6:
@@ -88,9 +102,9 @@ State 6:
           description ::= * string
           string ::= * LITERAL_STRING
 
-                LITERAL_STRING shift  41
-                   description shift  16
-                        string shift  43
+                LITERAL_STRING shift  49
+                   description shift  18
+                        string shift  51
                      {default} reduce 3
 
 State 7:
@@ -98,19 +112,19 @@ State 7:
           version ::= * string
           string ::= * LITERAL_STRING
 
-                LITERAL_STRING shift  41
+                LITERAL_STRING shift  49
                        version shift  6
-                        string shift  25
+                        string shift  27
 
 State 8:
       (3) description ::= *
           description ::= * string
-          parameter ::= attribute_name EQUAL attribute_value * description SEMICOLON
+          parameter ::= parameter_main parameter_sublist * description SEMICOLON
           string ::= * LITERAL_STRING
 
-                LITERAL_STRING shift  41
-                   description shift  18
-                        string shift  43
+                LITERAL_STRING shift  49
+                   description shift  21
+                        string shift  51
                      {default} reduce 3
 
 State 9:
@@ -119,9 +133,9 @@ State 9:
           object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET * description SEMICOLON
           string ::= * LITERAL_STRING
 
-                LITERAL_STRING shift  41
-                   description shift  20
-                        string shift  43
+                LITERAL_STRING shift  49
+                   description shift  22
+                        string shift  51
                      {default} reduce 3
 
 State 10:
@@ -130,209 +144,236 @@ State 10:
           application ::= CPU name OPEN_BRACKET object_list CLOSE_BRACKET * description SEMICOLON
           string ::= * LITERAL_STRING
 
-                LITERAL_STRING shift  41
-                   description shift  22
-                        string shift  43
+                LITERAL_STRING shift  49
+                   description shift  24
+                        string shift  51
                      {default} reduce 3
 
 State 11:
           object_name ::= object * name
           name ::= * LITERAL_NAME
 
-                  LITERAL_NAME shift  32
-                          name shift  27
+                  LITERAL_NAME shift  35
+                          name shift  29
 
 State 12:
+          parameter ::= parameter_main * parameter_sublist description SEMICOLON
+     (16) parameter_sublist ::= *
+          parameter_sublist ::= * OPEN_BRACKET parameter_list CLOSE_BRACKET
+
+                  OPEN_BRACKET shift  15
+             parameter_sublist shift  8
+                     {default} reduce 16
+
+State 13:
           application ::= CPU * name OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON
           name ::= * LITERAL_NAME
 
-                  LITERAL_NAME shift  32
-                          name shift  23
+                  LITERAL_NAME shift  35
+                          name shift  25
 
-State 13:
-          file ::= oil_version * application foo
+State 14:
+          file ::= oil_version * application
       (5) application ::= *
           application ::= * CPU name OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON
 
-                           CPU shift  12
-                   application shift  4
+                           CPU shift  13
+                   application shift  26
                      {default} reduce 5
 
-State 14:
-          object_definition ::= object_name OPEN_BRACKET * parameter_list CLOSE_BRACKET description SEMICOLON
+State 15:
      (12) parameter_list ::= *
           parameter_list ::= * parameter_list parameter
+          parameter_sublist ::= OPEN_BRACKET * parameter_list CLOSE_BRACKET
 
                 parameter_list shift  2
                      {default} reduce 12
 
-State 15:
-          application ::= CPU name OPEN_BRACKET * object_list CLOSE_BRACKET description SEMICOLON
-      (7) object_list ::= *
-          object_list ::= * object_list object_definition
-
-                   object_list shift  3
-                     {default} reduce 7
-
 State 16:
-          oil_version ::= OIL_VERSION EQUAL version description * SEMICOLON
+          object_definition ::= object_name OPEN_BRACKET * parameter_list CLOSE_BRACKET description SEMICOLON
+     (12) parameter_list ::= *
+          parameter_list ::= * parameter_list parameter
 
-                     SEMICOLON shift  26
+                parameter_list shift  3
+                     {default} reduce 12
 
 State 17:
+          application ::= CPU name OPEN_BRACKET * object_list CLOSE_BRACKET description SEMICOLON
+          object_list ::= * object_list object_definition
+      (8) object_list ::= *
+
+                   object_list shift  4
+                     {default} reduce 8
+
+State 18:
+          oil_version ::= OIL_VERSION EQUAL version description * SEMICOLON
+
+                     SEMICOLON shift  28
+
+State 19:
           oil_version ::= OIL_VERSION * EQUAL version description SEMICOLON
 
                          EQUAL shift  7
 
-State 18:
-          parameter ::= attribute_name EQUAL attribute_value description * SEMICOLON
-
-                     SEMICOLON shift  36
-
-State 19:
-          parameter ::= attribute_name * EQUAL attribute_value description SEMICOLON
+State 20:
+          parameter_main ::= attribute_name * EQUAL attribute_value
 
                          EQUAL shift  1
 
-State 20:
-          object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET description * SEMICOLON
-
-                     SEMICOLON shift  38
-
 State 21:
-          object_definition ::= object_name description * SEMICOLON
+          parameter ::= parameter_main parameter_sublist description * SEMICOLON
 
-                     SEMICOLON shift  39
+                     SEMICOLON shift  44
 
 State 22:
-          application ::= CPU name OPEN_BRACKET object_list CLOSE_BRACKET description * SEMICOLON
+          object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET description * SEMICOLON
 
-                     SEMICOLON shift  42
+                     SEMICOLON shift  46
 
 State 23:
-          application ::= CPU name * OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON
+          object_definition ::= object_name description * SEMICOLON
 
-                  OPEN_BRACKET shift  15
+                     SEMICOLON shift  47
 
 State 24:
-      (0) file ::= oil_version application foo *
+          application ::= CPU name OPEN_BRACKET object_list CLOSE_BRACKET description * SEMICOLON
+
+                     SEMICOLON shift  50
+
+State 25:
+          application ::= CPU name * OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON
+
+                  OPEN_BRACKET shift  17
+
+State 26:
+      (0) file ::= oil_version application *
 
                              $ reduce 0
 
-State 25:
+State 27:
       (2) version ::= string *
 
                      {default} reduce 2
 
-State 26:
+State 28:
       (1) oil_version ::= OIL_VERSION EQUAL version description SEMICOLON *
 
                      {default} reduce 1
 
-State 27:
+State 29:
      (11) object_name ::= object name *
 
                      {default} reduce 11
 
-State 28:
-     (27) object ::= LITERAL_OBJECT *
-
-                     {default} reduce 27
-
-State 29:
-     (16) attribute_name ::= object *
-
-                     {default} reduce 16
-
 State 30:
-     (15) attribute_name ::= name *
+     (29) object ::= LITERAL_OBJECT *
 
-                     {default} reduce 15
+                     {default} reduce 29
 
 State 31:
-     (28) boolean ::= LITERAL_BOOLEAN *
-
-                     {default} reduce 28
-
-State 32:
-     (26) name ::= LITERAL_NAME *
-
-                     {default} reduce 26
-
-State 33:
-     (19) attribute_value ::= string *
+     (19) attribute_name ::= object *
 
                      {default} reduce 19
 
-State 34:
-     (18) attribute_value ::= boolean *
+State 32:
+     (18) attribute_name ::= name *
 
                      {default} reduce 18
 
-State 35:
-     (17) attribute_value ::= name *
+State 33:
+     (17) parameter_sublist ::= OPEN_BRACKET parameter_list CLOSE_BRACKET *
 
                      {default} reduce 17
 
+State 34:
+     (30) boolean ::= LITERAL_BOOLEAN *
+
+                     {default} reduce 30
+
+State 35:
+     (28) name ::= LITERAL_NAME *
+
+                     {default} reduce 28
+
 State 36:
-     (14) parameter ::= attribute_name EQUAL attribute_value description SEMICOLON *
+     (27) decimal ::= LITERAL_DECIMAL *
+
+                     {default} reduce 27
+
+State 37:
+     (26) integer ::= LITERAL_INTEGER *
+
+                     {default} reduce 26
+
+State 38:
+     (24) attribute_value ::= decimal *
+
+                     {default} reduce 24
+
+State 39:
+     (23) attribute_value ::= integer *
+
+                     {default} reduce 23
+
+State 40:
+     (22) attribute_value ::= string *
+
+                     {default} reduce 22
+
+State 41:
+     (21) attribute_value ::= boolean *
+
+                     {default} reduce 21
+
+State 42:
+     (20) attribute_value ::= name *
+
+                     {default} reduce 20
+
+State 43:
+     (15) parameter_main ::= attribute_name EQUAL attribute_value *
+
+                     {default} reduce 15
+
+State 44:
+     (14) parameter ::= parameter_main parameter_sublist description SEMICOLON *
 
                      {default} reduce 14
 
-State 37:
+State 45:
      (13) parameter_list ::= parameter_list parameter *
 
                      {default} reduce 13
 
-State 38:
+State 46:
      (10) object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON *
 
                      {default} reduce 10
 
-State 39:
+State 47:
       (9) object_definition ::= object_name description SEMICOLON *
 
                      {default} reduce 9
 
-State 40:
-      (8) object_list ::= object_list object_definition *
+State 48:
+      (7) object_list ::= object_list object_definition *
 
-                     {default} reduce 8
+                     {default} reduce 7
 
-State 41:
-     (23) string ::= LITERAL_STRING *
+State 49:
+     (25) string ::= LITERAL_STRING *
 
-                     {default} reduce 23
+                     {default} reduce 25
 
-State 42:
+State 50:
       (6) application ::= CPU name OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON *
 
                      {default} reduce 6
 
-State 43:
+State 51:
       (4) description ::= string *
 
                      {default} reduce 4
-
-State 44:
-     (25) decimal ::= LITERAL_DECIMAL *
-
-                     {default} reduce 25
-
-State 45:
-     (24) integer ::= LITERAL_INTEGER *
-
-                     {default} reduce 24
-
-State 46:
-     (22) foo ::= decimal *
-
-                     {default} reduce 22
-
-State 47:
-     (21) foo ::= integer *
-
-                     {default} reduce 21
 
 ----------------------------------------------------
 Symbols:
@@ -353,19 +394,20 @@ Symbols:
    14: file: OIL_VERSION
    15: oil_version: OIL_VERSION
    16: application: <lambda> CPU
-   17: foo: <lambda> LITERAL_INTEGER LITERAL_DECIMAL
-   18: version: LITERAL_STRING
-   19: description: <lambda> LITERAL_STRING
-   20: string: LITERAL_STRING
-   21: name: LITERAL_NAME
-   22: object_list: <lambda> LITERAL_OBJECT
-   23: object_definition: LITERAL_OBJECT
-   24: object_name: LITERAL_OBJECT
-   25: parameter_list: <lambda> LITERAL_NAME LITERAL_OBJECT
-   26: object: LITERAL_OBJECT
-   27: parameter: LITERAL_NAME LITERAL_OBJECT
-   28: attribute_name: LITERAL_NAME LITERAL_OBJECT
-   29: attribute_value: LITERAL_STRING LITERAL_NAME LITERAL_BOOLEAN
-   30: boolean: LITERAL_BOOLEAN
-   31: integer: LITERAL_INTEGER
-   32: decimal: LITERAL_DECIMAL
+   17: version: LITERAL_STRING
+   18: description: <lambda> LITERAL_STRING
+   19: string: LITERAL_STRING
+   20: name: LITERAL_NAME
+   21: object_list: <lambda> LITERAL_OBJECT
+   22: object_definition: LITERAL_OBJECT
+   23: object_name: LITERAL_OBJECT
+   24: parameter_list: <lambda> LITERAL_NAME LITERAL_OBJECT
+   25: object: LITERAL_OBJECT
+   26: parameter: LITERAL_NAME LITERAL_OBJECT
+   27: parameter_main: LITERAL_NAME LITERAL_OBJECT
+   28: parameter_sublist: <lambda> OPEN_BRACKET
+   29: attribute_name: LITERAL_NAME LITERAL_OBJECT
+   30: attribute_value: LITERAL_STRING LITERAL_INTEGER LITERAL_DECIMAL LITERAL_NAME LITERAL_BOOLEAN
+   31: boolean: LITERAL_BOOLEAN
+   32: integer: LITERAL_INTEGER
+   33: decimal: LITERAL_DECIMAL

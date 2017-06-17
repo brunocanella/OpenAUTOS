@@ -26,8 +26,9 @@ ifdef VERBOSE
 endif
 
 #
-APP_DIR := $(CURRENT_DIR)/app 
+APP_DIR := $(CURRENT_DIR)/app
 BUILD_DIR := $(CURRENT_DIR)/build
+OILER_DIR := $(CURRENT_DIR)/oiler
 OS_DIR := $(CURRENT_DIR)/os
 
 OPTIONS += APP_DIR='$(APP_DIR)'
@@ -36,26 +37,35 @@ OPTIONS += OS_DIR='$(OS_DIR)'
 
 all: build
 
-default:
+oiler:
+	cd oiler && make
+
+OILER_EXE := $(abspath oiler/oiler)
+OIL_FILE := $(abspath $(wildcard app/*.oil))
+app: oiler
+	#echo $(OILER_EXE)
+	cd app && $(OILER_EXE) $(OIL_FILE)
+	# Joins all .d files together to form the main.c file in the OS dir.
+	echo "#include <openautos.h>\n" | cat - $(OILER_DIR)/*.d $(APP_DIR)/*.d $(OS_DIR)/*.d > $(OS_DIR)/main.c
+
+build_dir:
 	mkdir -p $(BUILD_DIR)
 
-os: default
-	cd os && make $(OPTIONS)
+os: build_dir
+	cd os && make $(OPTIONS) 
 
-app: os
-	cd app && make $(OPTIONS)
-
-compile: os app
+compile: app os
 
 build: compile
 	echo Starting Build:
 	# Object files
 	#BUILD_OBJECTS=$(wildcard **/*.$(OBJECT_EXTENSION))
-	$(eval BUILD_OBJECTS := $(shell find . -name '*.$(OBJECT_EXTENSION)') )
+	$(eval BUILD_OBJECTS := $(shell find ./build -name '*.$(OBJECT_EXTENSION)'))
+	echo $(BUILD_OBJECTS)
 	$(CC) $(CFLAGS) --output=+mcof -O./build/build.cof $(BUILD_OBJECTS)	
 	echo Finishing Build.
 
 clean:
 	rm -rf build
 
-.PHONY: all build compile os osek app test clean
+.PHONY: all oiler app build_dir os compile build clean

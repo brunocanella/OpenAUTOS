@@ -1,5 +1,6 @@
 # Ignores the build directory
 build/
+app_old
 
 /OpenAUTOS.X/nbproject/private/
 /OpenAUTOS.X/dist/default/

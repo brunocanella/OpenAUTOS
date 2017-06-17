@@ -51,4 +51,7 @@ PIC18F25K80: default
 	cd ./platform/pic18f25k80 && make CC=$(CC) COMPILE='$(COMPILE)' CFLAGS='$(CFLAGS)' PLATFORM=$(PLATFORM) BUILD_DIR=$(BUILD_DIR)/platform VERBOSE=$(VERBOSE)	
 	echo Compiling Platform OK!
 
-.PHONY: all compile os osek PIC18F25K80
+clean:
+	rm -rf main.c
+
+.PHONY: all compile os osek PIC18F25K80 clean

@@ -1,5 +1,6 @@
 # Build the source, documentation, and tests.
 TARGET=oiler
+FILE=oiler.c
 
 all: oiler
 
@@ -9,8 +10,8 @@ lemon:
 language:
 	cd language && make
 
-$(TARGET): oiler.c lemon language
-	$(CC) -o $(TARGET) oiler.c ./language/oiler_parser.o ./language/oiler_lexer.o $(CFLAGS)
+$(TARGET): $(FILE) lemon language
+	$(CC) -o $(TARGET) $(FILE) ./language/oiler_parser.o ./language/oiler_lexer.o $(CFLAGS)
 
 test: $(TARGET)
 	cd test && make --silent
@@ -19,6 +20,6 @@ test: $(TARGET)
 clean:
 	cd lemon && make -s clean
 	cd language && make -s clean
-	rm -f $(TARGET)
+	rm -f $(TARGET) *.d
 
 .PHONY: lemon language test clean

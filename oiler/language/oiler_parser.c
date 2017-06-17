@@ -8,9 +8,34 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "globals.h"
-#line 14 "oiler_parser.c"
+
+#include "oiler_parser.h"
+
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+
+#define debug_print(...) do { if (DEBUG) fprintf(stdout, ##__VA_ARGS__); } while (0)
+#define warning_print(...) do { fprintf(stdout, ##__VA_ARGS__); } while (0)	
+
+#define OBJECT_NONE 0
+#define OBJECT_OS 1
+#define OBJECT_TASK 2
+#define OBJECT_RESOURCE 3
+
+void InitializeResource( Resource* a_resource, const char a_name[] ) {
+	strcpy( a_resource->name, a_name );
+	a_resource->type = RESOURCE_TYPE_UNDEFINED; 
+	a_resource->priority = 0;	
+}
+
+
+int g_current_object = OBJECT_NONE;
+Resource* g_current_resource = NULL;
+#line 39 "oiler_parser.c"
 /* Next is all token values, in a form suitable for use by makeheaders.
 ** This section will be null unless lemon is run with the -m switch.
 */
@@ -61,26 +86,27 @@
 **                       defined, then do no error processing.
 */
 #define YYCODETYPE unsigned char
-#define YYNOCODE 34
+#define YYNOCODE 35
 #define YYACTIONTYPE unsigned char
 #define ParseTOKENTYPE  YYSTYPE 
 typedef union {
   int yyinit;
   ParseTOKENTYPE yy0;
-  char* yy9;
-  Object yy14;
-  double yy15;
-  int yy64;
+  double yy8;
+  Object yy20;
+  LiteralValue yy43;
+  char* yy49;
+  int yy60;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
 #endif
-#define ParseARG_SDECL
-#define ParseARG_PDECL
-#define ParseARG_FETCH
-#define ParseARG_STORE
-#define YYNSTATE 48
-#define YYNRULE 29
+#define ParseARG_SDECL  OS* os ;
+#define ParseARG_PDECL , OS* os 
+#define ParseARG_FETCH  OS* os  = yypParser->os 
+#define ParseARG_STORE yypParser->os  = os 
+#define YYNSTATE 52
+#define YYNRULE 31
 #define YY_NO_ACTION      (YYNSTATE+YYNRULE+2)
 #define YY_ACCEPT_ACTION  (YYNSTATE+YYNRULE+1)
 #define YY_ERROR_ACTION   (YYNSTATE+YYNRULE)
@@ -149,46 +175,49 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **                     shifting non-terminals after a reduce.
 **  yy_default[]       Default action for each state.
 */
-#define YY_ACTTAB_COUNT (59)
+#define YY_ACTTAB_COUNT (64)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */    30,   33,   35,   24,    9,   29,   37,   19,   32,   28,
- /*    10 */     8,   34,   40,    5,   42,   11,   41,   47,   46,   32,
- /*    20 */    48,   31,   22,   43,   20,   43,   18,   43,    6,   15,
- /*    30 */    25,   16,   43,   21,   43,    3,   14,   39,   41,   10,
- /*    40 */    45,   44,   78,   13,   28,   38,    1,    2,   36,    7,
- /*    50 */    12,    4,   26,   32,   17,   41,   79,   23,   27,
+ /*     0 */    40,   42,   49,   37,   36,   35,    6,   34,   27,   52,
+ /*    10 */    32,   43,   41,   39,   38,   31,   45,   12,   17,   20,
+ /*    20 */    48,    5,    9,   11,   33,    1,   35,   30,   35,   30,
+ /*    30 */    24,   51,   22,   51,   50,   21,   51,   47,   18,   51,
+ /*    40 */    23,   51,   16,   46,   49,   10,   84,   14,   44,    7,
+ /*    50 */    30,   28,    3,    2,    4,   13,   25,   26,    8,   35,
+ /*    60 */    15,   49,   29,   19,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    21,   20,   21,   17,    6,   26,   27,   28,   10,   11,
- /*    10 */    29,   30,   23,   24,    3,   26,    7,   31,   32,   10,
- /*    20 */     0,   12,   19,   20,   19,   20,   19,   20,   18,    5,
- /*    30 */    20,   19,   20,   19,   20,   22,    5,    3,    7,    6,
- /*    40 */     8,    9,   14,   15,   11,    3,    2,   25,    3,    2,
- /*    50 */     4,   16,    3,   10,    1,    7,   33,   21,   21,
+ /*     0 */    19,   20,    7,    8,    9,   10,   17,   12,   19,    0,
+ /*    10 */    20,   30,   31,   32,   33,   25,   26,   27,    5,   29,
+ /*    20 */    22,   23,    6,   25,    6,    2,   10,   11,   10,   11,
+ /*    30 */    18,   19,   18,   19,    3,   18,   19,    3,   18,   19,
+ /*    40 */    18,   19,    5,    3,    7,    6,   14,   15,    3,    2,
+ /*    50 */    11,    3,   24,   24,   21,    4,   20,   16,   28,   10,
+ /*    60 */     5,    7,   20,    1,
 };
-#define YY_SHIFT_USE_DFLT (-3)
-#define YY_SHIFT_COUNT (24)
-#define YY_SHIFT_MIN   (-2)
-#define YY_SHIFT_MAX   (53)
+#define YY_SHIFT_USE_DFLT (-6)
+#define YY_SHIFT_COUNT (26)
+#define YY_SHIFT_MIN   (-5)
+#define YY_SHIFT_MAX   (62)
 static const signed char yy_shift_ofst[] = {
- /*     0 */    53,    9,   -2,   33,   32,   31,   48,   48,   48,   48,
- /*    10 */    48,   43,   43,   46,   -3,   -3,   49,   47,   45,   44,
- /*    20 */    42,   34,   11,   24,   20,
+ /*     0 */    62,   -5,   18,   16,   39,   37,   54,   54,   54,   54,
+ /*    10 */    54,   49,   55,   49,   51,   -6,   -6,   -6,   48,   47,
+ /*    20 */    23,   45,   40,   34,   31,   13,    9,
 };
-#define YY_REDUCE_USE_DFLT (-22)
-#define YY_REDUCE_COUNT (15)
-#define YY_REDUCE_MIN   (-21)
-#define YY_REDUCE_MAX   (37)
+#define YY_REDUCE_USE_DFLT (-20)
+#define YY_REDUCE_COUNT (17)
+#define YY_REDUCE_MIN   (-19)
+#define YY_REDUCE_MAX   (42)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */    28,  -19,  -21,  -11,  -14,   14,   12,   10,    7,    5,
- /*    10 */     3,   37,   36,   35,   22,   13,
+ /*     0 */    32,  -19,  -10,  -10,   -2,   22,   20,  -11,   17,   14,
+ /*    10 */    12,   42,   30,   36,   41,   29,   28,   33,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */    77,   77,   77,   77,   68,   51,   51,   77,   51,   51,
- /*    10 */    51,   77,   77,   53,   60,   55,   77,   77,   77,   77,
- /*    20 */    77,   77,   77,   77,   77,   50,   49,   59,   75,   64,
- /*    30 */    63,   76,   74,   67,   66,   65,   62,   61,   58,   57,
- /*    40 */    56,   71,   54,   52,   73,   72,   70,   69,
+ /*     0 */    83,   83,   83,   83,   83,   55,   55,   83,   55,   55,
+ /*    10 */    55,   83,   68,   83,   57,   64,   64,   60,   83,   83,
+ /*    20 */    83,   83,   83,   83,   83,   83,   83,   54,   53,   63,
+ /*    30 */    81,   71,   70,   69,   82,   80,   79,   78,   76,   75,
+ /*    40 */    74,   73,   72,   67,   66,   65,   62,   61,   59,   77,
+ /*    50 */    58,   56,
 };
 
 /* The next table maps tokens into fallback tokens.  If a construct
@@ -285,11 +314,11 @@ static const char *const yyTokenName[] = {
   "CPU",           "OPEN_BRACKET",  "CLOSE_BRACKET",  "LITERAL_STRING",
   "LITERAL_INTEGER",  "LITERAL_DECIMAL",  "LITERAL_NAME",  "LITERAL_OBJECT",
   "LITERAL_BOOLEAN",  "error",         "file",          "oil_version", 
-  "application",   "foo",           "version",       "description", 
-  "string",        "name",          "object_list",   "object_definition",
-  "object_name",   "parameter_list",  "object",        "parameter",   
-  "attribute_name",  "attribute_value",  "boolean",       "integer",     
-  "decimal",     
+  "application",   "version",       "description",   "string",      
+  "name",          "object_list",   "object_definition",  "object_name", 
+  "parameter_list",  "object",        "parameter",     "parameter_main",
+  "parameter_sublist",  "attribute_name",  "attribute_value",  "boolean",     
+  "integer",       "decimal",     
 };
 #endif /* NDEBUG */
 
@@ -297,35 +326,37 @@ static const char *const yyTokenName[] = {
 /* For tracing reduce actions, the names of all rules are required.
 */
 static const char *const yyRuleName[] = {
- /*   0 */ "file ::= oil_version application foo",
+ /*   0 */ "file ::= oil_version application",
  /*   1 */ "oil_version ::= OIL_VERSION EQUAL version description SEMICOLON",
  /*   2 */ "version ::= string",
  /*   3 */ "description ::=",
  /*   4 */ "description ::= string",
  /*   5 */ "application ::=",
  /*   6 */ "application ::= CPU name OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON",
- /*   7 */ "object_list ::=",
- /*   8 */ "object_list ::= object_list object_definition",
+ /*   7 */ "object_list ::= object_list object_definition",
+ /*   8 */ "object_list ::=",
  /*   9 */ "object_definition ::= object_name description SEMICOLON",
  /*  10 */ "object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON",
  /*  11 */ "object_name ::= object name",
  /*  12 */ "parameter_list ::=",
  /*  13 */ "parameter_list ::= parameter_list parameter",
- /*  14 */ "parameter ::= attribute_name EQUAL attribute_value description SEMICOLON",
- /*  15 */ "attribute_name ::= name",
- /*  16 */ "attribute_name ::= object",
- /*  17 */ "attribute_value ::= name",
- /*  18 */ "attribute_value ::= boolean",
- /*  19 */ "attribute_value ::= string",
- /*  20 */ "foo ::=",
- /*  21 */ "foo ::= integer",
- /*  22 */ "foo ::= decimal",
- /*  23 */ "string ::= LITERAL_STRING",
- /*  24 */ "integer ::= LITERAL_INTEGER",
- /*  25 */ "decimal ::= LITERAL_DECIMAL",
- /*  26 */ "name ::= LITERAL_NAME",
- /*  27 */ "object ::= LITERAL_OBJECT",
- /*  28 */ "boolean ::= LITERAL_BOOLEAN",
+ /*  14 */ "parameter ::= parameter_main parameter_sublist description SEMICOLON",
+ /*  15 */ "parameter_main ::= attribute_name EQUAL attribute_value",
+ /*  16 */ "parameter_sublist ::=",
+ /*  17 */ "parameter_sublist ::= OPEN_BRACKET parameter_list CLOSE_BRACKET",
+ /*  18 */ "attribute_name ::= name",
+ /*  19 */ "attribute_name ::= object",
+ /*  20 */ "attribute_value ::= name",
+ /*  21 */ "attribute_value ::= boolean",
+ /*  22 */ "attribute_value ::= string",
+ /*  23 */ "attribute_value ::= integer",
+ /*  24 */ "attribute_value ::= decimal",
+ /*  25 */ "string ::= LITERAL_STRING",
+ /*  26 */ "integer ::= LITERAL_INTEGER",
+ /*  27 */ "decimal ::= LITERAL_DECIMAL",
+ /*  28 */ "name ::= LITERAL_NAME",
+ /*  29 */ "object ::= LITERAL_OBJECT",
+ /*  30 */ "boolean ::= LITERAL_BOOLEAN",
 };
 #endif /* NDEBUG */
 
@@ -406,25 +437,30 @@ static void yy_destructor(
     */
     case 15: /* oil_version */
 {
-#line 25 "oiler_parser.lemon"
- printf("destructor oil_version\n"); 
-#line 412 "oiler_parser.c"
+#line 60 "oiler_parser.lemon"
+ debug_print("destructor oil_version\n"); 
+#line 443 "oiler_parser.c"
 }
       break;
-    case 18: /* version */
+    case 16: /* application */
 {
-#line 31 "oiler_parser.lemon"
- printf( "destructor version: %s\n", (yypminor->yy9) ); 
-#line 419 "oiler_parser.c"
+#line 86 "oiler_parser.lemon"
+ debug_print("destructor application\n"); 
+#line 450 "oiler_parser.c"
 }
       break;
-    case 19: /* description */
+    case 17: /* version */
 {
-#line 38 "oiler_parser.lemon"
- printf( "destructor description: %s\n", (yypminor->yy9) ); 
-#line 51 "oiler_parser.lemon"
- printf("destructor application\n"); 
-#line 428 "oiler_parser.c"
+#line 66 "oiler_parser.lemon"
+ debug_print( "destructor version: %s\n", (yypminor->yy49) ); 
+#line 457 "oiler_parser.c"
+}
+      break;
+    case 18: /* description */
+{
+#line 73 "oiler_parser.lemon"
+ debug_print( "destructor description: %s\n", (yypminor->yy49) ); 
+#line 464 "oiler_parser.c"
 }
       break;
     default:  break;   /* If no destructor action specified: do nothing */
@@ -662,35 +698,37 @@ static const struct {
   YYCODETYPE lhs;         /* Symbol on the left-hand side of the rule */
   unsigned char nrhs;     /* Number of right-hand side symbols in the rule */
 } yyRuleInfo[] = {
-  { 14, 3 },
+  { 14, 2 },
   { 15, 5 },
+  { 17, 1 },
+  { 18, 0 },
   { 18, 1 },
-  { 19, 0 },
-  { 19, 1 },
   { 16, 0 },
   { 16, 7 },
-  { 22, 0 },
-  { 22, 2 },
-  { 23, 3 },
-  { 23, 6 },
+  { 21, 2 },
+  { 21, 0 },
+  { 22, 3 },
+  { 22, 6 },
+  { 23, 2 },
+  { 24, 0 },
   { 24, 2 },
-  { 25, 0 },
-  { 25, 2 },
-  { 27, 5 },
-  { 28, 1 },
-  { 28, 1 },
+  { 26, 4 },
+  { 27, 3 },
+  { 28, 0 },
+  { 28, 3 },
   { 29, 1 },
   { 29, 1 },
-  { 29, 1 },
-  { 17, 0 },
-  { 17, 1 },
-  { 17, 1 },
-  { 20, 1 },
-  { 31, 1 },
-  { 32, 1 },
-  { 21, 1 },
-  { 26, 1 },
   { 30, 1 },
+  { 30, 1 },
+  { 30, 1 },
+  { 30, 1 },
+  { 30, 1 },
+  { 19, 1 },
+  { 32, 1 },
+  { 33, 1 },
+  { 20, 1 },
+  { 25, 1 },
+  { 31, 1 },
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -745,143 +783,263 @@ static void yy_reduce(
   **  #line <lineno> <thisfile>
   **     break;
   */
-      case 0: /* file ::= oil_version application foo */
-#line 19 "oiler_parser.lemon"
+      case 0: /* file ::= oil_version application */
+#line 54 "oiler_parser.lemon"
 {
-  yy_destructor(yypParser,15,&yymsp[-2].minor);
+  yy_destructor(yypParser,15,&yymsp[-1].minor);
+  yy_destructor(yypParser,16,&yymsp[0].minor);
 }
-#line 754 "oiler_parser.c"
+#line 793 "oiler_parser.c"
         break;
       case 1: /* oil_version ::= OIL_VERSION EQUAL version description SEMICOLON */
-#line 26 "oiler_parser.lemon"
+#line 61 "oiler_parser.lemon"
 {
-	printf( "OIL_VERSION = %s %s\n", yymsp[-2].minor.yy9, yymsp[-1].minor.yy9 ? yymsp[-1].minor.yy9 : "" );
+	debug_print( "OIL_VERSION = %s %s\n", yymsp[-2].minor.yy49, yymsp[-1].minor.yy49 ? yymsp[-1].minor.yy49 : "" );
 }
-#line 761 "oiler_parser.c"
+#line 800 "oiler_parser.c"
         break;
       case 2: /* version ::= string */
-#line 32 "oiler_parser.lemon"
+#line 67 "oiler_parser.lemon"
 {
-	yygotominor.yy9 = yymsp[0].minor.yy9;
-    printf( "version: %s\n", yygotominor.yy9 );
+	yygotominor.yy49 = yymsp[0].minor.yy49;
+    debug_print( "version: %s\n", yygotominor.yy49 );
 }
-#line 769 "oiler_parser.c"
+#line 808 "oiler_parser.c"
         break;
       case 3: /* description ::= */
-#line 39 "oiler_parser.lemon"
+#line 74 "oiler_parser.lemon"
 {
-    printf( "description: empty\n" );
+    debug_print( "description: empty\n" );
 }
-#line 776 "oiler_parser.c"
+#line 815 "oiler_parser.c"
         break;
       case 4: /* description ::= string */
-#line 42 "oiler_parser.lemon"
+#line 77 "oiler_parser.lemon"
 {
-	yygotominor.yy9 = yymsp[0].minor.yy9;
-    printf( "description: %s\n", yygotominor.yy9 );
+	yygotominor.yy49 = yymsp[0].minor.yy49;
+    debug_print( "description: %s\n", yygotominor.yy49 );
 }
-#line 784 "oiler_parser.c"
+#line 823 "oiler_parser.c"
         break;
       case 6: /* application ::= CPU name OPEN_BRACKET object_list CLOSE_BRACKET description SEMICOLON */
-#line 53 "oiler_parser.lemon"
+#line 88 "oiler_parser.lemon"
 {
-	printf( "application OK: name=%s description=%s\n", yymsp[-5].minor.yy9, yymsp[-1].minor.yy9 );
+	debug_print( "application OK: name=%s description=%s\n", yymsp[-5].minor.yy49, yymsp[-1].minor.yy49 );
 }
-#line 791 "oiler_parser.c"
+#line 830 "oiler_parser.c"
         break;
-      case 7: /* object_list ::= */
-#line 57 "oiler_parser.lemon"
-{ printf( "object_list: empty\n" ); }
-#line 796 "oiler_parser.c"
+      case 7: /* object_list ::= object_list object_definition */
+#line 92 "oiler_parser.lemon"
+{ debug_print( "object_list: object_list object_definition\n" ); }
+#line 835 "oiler_parser.c"
         break;
-      case 8: /* object_list ::= object_list object_definition */
-#line 58 "oiler_parser.lemon"
-{ printf( "object_list: object_list object_definition\n" ); }
-#line 801 "oiler_parser.c"
+      case 8: /* object_list ::= */
+#line 93 "oiler_parser.lemon"
+{ debug_print( "object_list: empty\n" ); }
+#line 840 "oiler_parser.c"
         break;
       case 9: /* object_definition ::= object_name description SEMICOLON */
-#line 60 "oiler_parser.lemon"
+#line 95 "oiler_parser.lemon"
 {
-	printf( "object_name(1): %s=%s\n", yymsp[-2].minor.yy14.type, yymsp[-2].minor.yy14.name );
-  yy_destructor(yypParser,19,&yymsp[-1].minor);
-}
-#line 809 "oiler_parser.c"
-        break;
-      case 10: /* object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON */
-#line 63 "oiler_parser.lemon"
-{
-	printf( "object_name(2): %s=%s\n", yymsp[-5].minor.yy14.type, yymsp[-5].minor.yy14.name );
-  yy_destructor(yypParser,19,&yymsp[-1].minor);
-}
-#line 817 "oiler_parser.c"
-        break;
-      case 11: /* object_name ::= object name */
-#line 68 "oiler_parser.lemon"
-{
-	yygotominor.yy14.type = yymsp[-1].minor.yy9;
-	yygotominor.yy14.name = yymsp[0].minor.yy9;
-}
-#line 825 "oiler_parser.c"
-        break;
-      case 14: /* parameter ::= attribute_name EQUAL attribute_value description SEMICOLON */
-#line 76 "oiler_parser.lemon"
-{
-	printf( "parameter: attribute[%s] = value[%s] description[%s] ;\n", yymsp[-4].minor.yy9, yymsp[-2].minor.yy9, yymsp[-1].minor.yy9 );
-}
-#line 832 "oiler_parser.c"
-        break;
-      case 15: /* attribute_name ::= name */
-      case 16: /* attribute_name ::= object */ yytestcase(yyruleno==16);
-      case 17: /* attribute_value ::= name */ yytestcase(yyruleno==17);
-      case 18: /* attribute_value ::= boolean */ yytestcase(yyruleno==18);
-      case 19: /* attribute_value ::= string */ yytestcase(yyruleno==19);
-#line 81 "oiler_parser.lemon"
-{ yygotominor.yy9 = yymsp[0].minor.yy9; }
-#line 841 "oiler_parser.c"
-        break;
-      case 23: /* string ::= LITERAL_STRING */
-#line 98 "oiler_parser.lemon"
-{
-    yygotominor.yy9 = yymsp[0].minor.yy0.sval;
+	debug_print( "object_definition(1): %s=%s\n", yymsp[-2].minor.yy20.type, yymsp[-2].minor.yy20.name );
+  yy_destructor(yypParser,18,&yymsp[-1].minor);
 }
 #line 848 "oiler_parser.c"
         break;
-      case 24: /* integer ::= LITERAL_INTEGER */
+      case 10: /* object_definition ::= object_name OPEN_BRACKET parameter_list CLOSE_BRACKET description SEMICOLON */
+#line 98 "oiler_parser.lemon"
+{
+	debug_print( "object_definition(2): %s=%s\n", yymsp[-5].minor.yy20.type, yymsp[-5].minor.yy20.name );
+  yy_destructor(yypParser,18,&yymsp[-1].minor);
+}
+#line 856 "oiler_parser.c"
+        break;
+      case 11: /* object_name ::= object name */
 #line 103 "oiler_parser.lemon"
 {
-    yygotominor.yy64 = yymsp[0].minor.yy0.ival;
+	yygotominor.yy20.type = yymsp[-1].minor.yy49;
+	yygotominor.yy20.name = yymsp[0].minor.yy49;
+	debug_print( "object_name: %s=%s\n", yymsp[-1].minor.yy49, yymsp[0].minor.yy49 );
+	if( strcmp(yymsp[-1].minor.yy49, "OS") == 0 ) {
+		g_current_object = OBJECT_OS;
+	} else if( strcmp(yymsp[-1].minor.yy49, "TASK") == 0 ) {
+		g_current_object = OBJECT_TASK;
+		Task* l_task = &os->tasks[os->task_count];
+		os->task_count++;
+		strcpy( l_task->name, yymsp[0].minor.yy49 );
+	} else if( strcmp(yymsp[-1].minor.yy49, "RESOURCE") == 0 ) {
+		g_current_object = OBJECT_RESOURCE;
+		Resource* l_resource = NULL;
+		// Check if resource was already created
+		int i;
+		for( i = 0; i < os->resource_count; i++ ) {
+			if( strcmp( os->resources[i].name, yymsp[0].minor.yy49 ) == 0 ) {
+				l_resource = &os->resources[i];
+				break;
+			}
+		}
+		// Create a new resource, in case it doesn't exist yet.
+		if( l_resource == NULL ) {
+			l_resource = &os->resources[os->resource_count];
+			os->resource_count++;
+			InitializeResource( l_resource, yymsp[0].minor.yy49 );		
+		}
+		g_current_resource = l_resource;
+	}
 }
-#line 855 "oiler_parser.c"
+#line 891 "oiler_parser.c"
         break;
-      case 25: /* decimal ::= LITERAL_DECIMAL */
-#line 108 "oiler_parser.lemon"
+      case 14: /* parameter ::= parameter_main parameter_sublist description SEMICOLON */
+#line 138 "oiler_parser.lemon"
 {
-    yygotominor.yy15 = yymsp[0].minor.yy0.dval;
+  yy_destructor(yypParser,18,&yymsp[-1].minor);
 }
-#line 862 "oiler_parser.c"
+#line 898 "oiler_parser.c"
         break;
-      case 26: /* name ::= LITERAL_NAME */
-#line 113 "oiler_parser.lemon"
+      case 15: /* parameter_main ::= attribute_name EQUAL attribute_value */
+#line 139 "oiler_parser.lemon"
+{
+	if( yymsp[0].minor.yy43.type == LITERAL_INTEGER ) {
+		debug_print( "parameter: attribute[%s] = value[%i];\n", yymsp[-2].minor.yy49, yymsp[0].minor.yy43.value.ival );
+	} else if( yymsp[0].minor.yy43.type == LITERAL_DECIMAL ) {
+		debug_print( "parameter: attribute[%s] = value[%f];\n", yymsp[-2].minor.yy49, yymsp[0].minor.yy43.value.dval );
+	} else {
+		debug_print( "parameter: attribute[%s] = value[%s];\n", yymsp[-2].minor.yy49, yymsp[0].minor.yy43.value.sval );
+	}
+	if( g_current_object == OBJECT_TASK ) {
+		Task* l_task = &os->tasks[os->task_count-1];
+		if( strcmp( yymsp[-2].minor.yy49, "PRIORITY" ) == 0 ) {
+			l_task->priority = yymsp[0].minor.yy43.value.ival;
+		} else if( strcmp( yymsp[-2].minor.yy49, "SCHEDULE" ) == 0 ) {
+			l_task->schedule = strcmp( yymsp[0].minor.yy43.value.sval, "FULL" ) == 0 ? 1 : 0;
+		} else if( strcmp( yymsp[-2].minor.yy49, "ACTIVATION" ) == 0 ) {
+			l_task->activation = yymsp[0].minor.yy43.value.ival;
+		} else if( strcmp( yymsp[-2].minor.yy49, "AUTOSTART" ) == 0 ) {
+			l_task->autostart = strcmp( yymsp[0].minor.yy43.value.sval, "TRUE" ) == 0 ? 1 : 0;
+			// TODO: Implement this
+		} else if( strcmp( yymsp[-2].minor.yy49, "RESOURCE" ) == 0 ) {
+			// Setting up or finding the resource
+			Resource* l_resource = NULL;
+			int i;
+			for( i = 0; i < os->resource_count; i++ ) {
+				if( strcmp( os->resources[i].name, yymsp[0].minor.yy43.value.sval ) == 0 ) {
+					l_resource = &os->resources[i];
+					break;
+				}
+			}
+			if( l_resource == NULL ) {
+				l_resource = &os->resources[os->resource_count];				
+				os->resource_count++;
+				InitializeResource( l_resource, yymsp[0].minor.yy43.value.sval );
+			}
+			// Linking the resource to the task
+			l_task->resources[l_task->resource_count] = l_resource;
+			l_task->resource_count++;
+		} else {
+			warning_print( "WARNING: TASK PROPERTY[%s] NOT SUPPORTED!!!\n", yymsp[-2].minor.yy49 );
+		}
+	} else if( g_current_object == OBJECT_RESOURCE ) {		
+		if( g_current_resource == NULL ) {
+			warning_print( "WARNING: RESOURCE NOT FOUND!!!\n" );
+		}
+		if( strcmp( yymsp[-2].minor.yy49, "RESOURCEPROPERTY" ) == 0 ) {
+			if( strcmp( yymsp[0].minor.yy43.value.sval, "STANDARD" ) == 0 ) {
+				g_current_resource->type = RESOURCE_TYPE_STANDARD;
+			} else if( strcmp( yymsp[0].minor.yy43.value.sval, "LINKED" ) == 0 ) {
+				g_current_resource->type = RESOURCE_TYPE_LINKED;				
+			} else if( strcmp( yymsp[0].minor.yy43.value.sval, "INTERNAL" ) == 0 ) {
+				g_current_resource->type = RESOURCE_TYPE_INTERNAL;
+			} else {
+				warning_print( "WARNING: RESOURCE->RESOURCEPROPERTY = %s NOT SUPPORTED!!!\n", yymsp[0].minor.yy43.value.sval );
+			}			
+		} else {
+			warning_print( "WARNING: RESOURCE PROPERTY[%s] NOT SUPPORTED!!!\n", yymsp[-2].minor.yy49 );
+		}
+	}
+}
+#line 961 "oiler_parser.c"
+        break;
+      case 16: /* parameter_sublist ::= */
+#line 198 "oiler_parser.lemon"
+{ debug_print( "FOO\n" ); }
+#line 966 "oiler_parser.c"
+        break;
+      case 17: /* parameter_sublist ::= OPEN_BRACKET parameter_list CLOSE_BRACKET */
+#line 199 "oiler_parser.lemon"
+{ debug_print( "BAR\n" ); }
+#line 971 "oiler_parser.c"
+        break;
+      case 18: /* attribute_name ::= name */
+      case 19: /* attribute_name ::= object */ yytestcase(yyruleno==19);
+#line 202 "oiler_parser.lemon"
+{ yygotominor.yy49 = yymsp[0].minor.yy49; }
+#line 977 "oiler_parser.c"
+        break;
+      case 20: /* attribute_value ::= name */
+#line 206 "oiler_parser.lemon"
+{ yygotominor.yy43.value.sval = yymsp[0].minor.yy49; yygotominor.yy43.type = LITERAL_NAME; }
+#line 982 "oiler_parser.c"
+        break;
+      case 21: /* attribute_value ::= boolean */
+#line 207 "oiler_parser.lemon"
+{ yygotominor.yy43.value.sval = yymsp[0].minor.yy49; yygotominor.yy43.type = LITERAL_BOOLEAN; }
+#line 987 "oiler_parser.c"
+        break;
+      case 22: /* attribute_value ::= string */
+#line 208 "oiler_parser.lemon"
+{ yygotominor.yy43.value.sval = yymsp[0].minor.yy49; yygotominor.yy43.type = LITERAL_STRING; }
+#line 992 "oiler_parser.c"
+        break;
+      case 23: /* attribute_value ::= integer */
+#line 209 "oiler_parser.lemon"
+{ yygotominor.yy43.value.ival = yymsp[0].minor.yy60; yygotominor.yy43.type = LITERAL_INTEGER; }
+#line 997 "oiler_parser.c"
+        break;
+      case 24: /* attribute_value ::= decimal */
+#line 210 "oiler_parser.lemon"
+{ yygotominor.yy43.value.dval = yymsp[0].minor.yy8; yygotominor.yy43.type = LITERAL_DECIMAL; }
+#line 1002 "oiler_parser.c"
+        break;
+      case 25: /* string ::= LITERAL_STRING */
+#line 217 "oiler_parser.lemon"
+{
+    yygotominor.yy49 = yymsp[0].minor.yy0.sval;
+}
+#line 1009 "oiler_parser.c"
+        break;
+      case 26: /* integer ::= LITERAL_INTEGER */
+#line 222 "oiler_parser.lemon"
+{
+    yygotominor.yy60 = yymsp[0].minor.yy0.ival;
+}
+#line 1016 "oiler_parser.c"
+        break;
+      case 27: /* decimal ::= LITERAL_DECIMAL */
+#line 227 "oiler_parser.lemon"
+{
+    yygotominor.yy8 = yymsp[0].minor.yy0.dval;
+}
+#line 1023 "oiler_parser.c"
+        break;
+      case 28: /* name ::= LITERAL_NAME */
+#line 232 "oiler_parser.lemon"
 {	
-	yygotominor.yy9 = yymsp[0].minor.yy0.sval;
+	yygotominor.yy49 = yymsp[0].minor.yy0.sval;
 }
-#line 869 "oiler_parser.c"
+#line 1030 "oiler_parser.c"
         break;
-      case 27: /* object ::= LITERAL_OBJECT */
-      case 28: /* boolean ::= LITERAL_BOOLEAN */ yytestcase(yyruleno==28);
-#line 118 "oiler_parser.lemon"
+      case 29: /* object ::= LITERAL_OBJECT */
+      case 30: /* boolean ::= LITERAL_BOOLEAN */ yytestcase(yyruleno==30);
+#line 237 "oiler_parser.lemon"
 {
-	yygotominor.yy9 = yymsp[0].minor.yy0.sval;
+	yygotominor.yy49 = yymsp[0].minor.yy0.sval;
 }
-#line 877 "oiler_parser.c"
+#line 1038 "oiler_parser.c"
         break;
       default:
       /* (5) application ::= */ yytestcase(yyruleno==5);
       /* (12) parameter_list ::= */ yytestcase(yyruleno==12);
       /* (13) parameter_list ::= parameter_list parameter */ yytestcase(yyruleno==13);
-      /* (20) foo ::= */ yytestcase(yyruleno==20);
-      /* (21) foo ::= integer */ yytestcase(yyruleno==21);
-      /* (22) foo ::= decimal */ yytestcase(yyruleno==22);
         break;
   };
   yygoto = yyRuleInfo[yyruleno].lhs;
@@ -941,10 +1099,18 @@ static void yy_syntax_error(
 ){
   ParseARG_FETCH;
 #define TOKEN (yyminor.yy0)
-#line 11 "oiler_parser.lemon"
+#line 36 "oiler_parser.lemon"
 
     fprintf(stderr, "Error parsing command\n");
-#line 948 "oiler_parser.c"
+	int n = sizeof( yyTokenName ) / sizeof( yyTokenName[0] );
+	int i;
+	for( i = 0; i < n; ++i ) {
+		int a = yy_find_shift_action( yypParser, (YYCODETYPE)i );
+		if( a < YYNSTATE + YYNRULE ) {
+			printf( "\tpossible token: %s\n", yyTokenName[i] );
+		}
+	}
+#line 1114 "oiler_parser.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
