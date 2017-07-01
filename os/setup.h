@@ -3,6 +3,9 @@
 
 #include <xc.h>
 
+/**
+ * Initializes the internal structures of the OS.
+ */
 void Setup();
 
 #endif//OS_SETUP_H

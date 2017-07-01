@@ -104,13 +104,13 @@ int main( int a_argument_count, char** a_arguments ) {
     fprintf( l_file, "\n" );
     // Creating constants for the resources
     for( i = 0; i < os.resource_count; i++ ) {
-        fprintf( l_file, "const ResourceType ResourceType_%s = %i;\n", os.resources[i].name, i+1 );
+        fprintf( l_file, "const ResourceType %s = %i;\n", os.resources[i].name, i+1 );
     }
     if( os.resource_count != 0 ) {
         fprintf( l_file, "\n" );
     }
     // Writing the initialization code for tasks
-    fprintf( l_file, "void TASK_FUNC_IDLE() {\n\twhile( TRUE ) { NOP(); }\n}\n\n" );
+    fprintf( l_file, "void TASK_FUNC_IDLE() {\n\twhile( TRUE ) { Schedule(); }\n}\n\n" );
     fprintf( l_file, "void InitializeTasks() {\n" );
     fprintf( l_file, "\tInitializeTaskData( g_idle, TASK_ID_IDLE, 0, READY, TASK_FUNC_IDLE );\n" );
     for( i = 0; i < os.task_count; i++ ) {
@@ -142,7 +142,7 @@ int main( int a_argument_count, char** a_arguments ) {
             }
         } while( ok != 1 );        
         // Generating the initialization code
-        fprintf( l_file, "\tAddResourceDataToResources( &g_res[%i], ResourceType_%s, %i );\n",
+        fprintf( l_file, "\tAddResourceDataToResources( &g_res[%i], %s, %i );\n",
             i, l_resource->name, l_resource->priority
         );
     }

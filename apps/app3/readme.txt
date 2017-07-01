@@ -1,0 +1,1 @@
+troca de contexto por prioridade e round-robin

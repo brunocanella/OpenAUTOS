@@ -71,6 +71,9 @@
 
 #include <xc.h>
 
+/**
+ * Performs the Setup specific to this plataform
+ */
 void PlatformSetup();
 
 #endif//PIC18F25K80_SETUP_H

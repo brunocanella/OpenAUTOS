@@ -1,5 +1,9 @@
 #include "task_context.h"
 
+uint8_t _wreg;
+uint8_t _bsr;
+uint8_t _status;
+
 StatusType ResetTaskContext( PlatformTaskContextRefType Context, CallbackType Callback ) {
 	// Erasing data members
 	Context->work = 0;

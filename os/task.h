@@ -31,8 +31,14 @@ typedef struct STaskDataType {
 /**A pointer type for tasks*/
 typedef TaskDataType* TaskDataRefType;
 
+/**
+ * Initializes a TaskData item passed by reference.
+ */
 void InitializeTaskData( TaskDataRefType Task, TaskType Id, TaskPriorityType Priority, TaskStateType State, TaskCallbackType Callback );
 
+/**
+ * Groups tasks with the same priority for the Round-Robin Scheduler.
+ */
 void GroupTasksSamePriority();
 
 extern TaskDataType g_tasks[];

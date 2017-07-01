@@ -3,6 +3,8 @@
 
 #if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
 #define ISR() void interrupt isr_os(void)
+#define ISR_ENTER() do{ _wreg = WREG; _bsr = BSR; _status = STATUS; }while(0)
+#define ISR_LEAVE() do{ STATUS = _status; BSR = _bsr; WREG = _wreg; }while(0)
 #else
 #error Platform not declared
 #endif
@@ -14,7 +16,8 @@
 // Save/Load Context
 #include "task_context.h"
 
-ISR() {	
+ISR() {
+    ISR_ENTER();
 	if( HasInterruptSystemCounter() ) {		
 		//////////////////////////////////
 		// START => CONTEXT_SWITCH_TIMEOUT
@@ -53,6 +56,7 @@ ISR() {
 		TimeoutRoutineSystemCounter();
 		ResetSystemCounter();
 	}
+    ISR_LEAVE();
 }
 
 #endif//OS_ISR_H

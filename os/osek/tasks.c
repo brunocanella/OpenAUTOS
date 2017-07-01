@@ -36,9 +36,10 @@ StatusType ActivateTask_Main( TaskType TaskID ) {
 
 StatusType ActivateTask( TaskType TaskID ) {    
     // TODO: Disable Timeout Prompt
-        
+    DisableAllInterrupts();
     StatusType l_status = ActivateTask_Main( TaskID );
-    if( l_status != E_OK ) {
+    EnableAllInterrupts();
+    if( l_status != E_OK ) {        
         return l_status;
     }
     // Finally, calls the scheduler to see if the new task will take over
@@ -66,9 +67,10 @@ StatusType TerminateTask_Main( void ) {
 
 StatusType TerminateTask( void ) {
     // TODO: Disable Timeout Prompt
-    // 
+    DisableAllInterrupts();
     StatusType l_status = TerminateTask_Main();
-    if( l_status != E_OK ) {
+    EnableAllInterrupts();
+    if( l_status != E_OK ) {        
         return l_status;
     }
 
@@ -79,16 +81,19 @@ StatusType TerminateTask( void ) {
 
 StatusType ChainTask( TaskType TaskID ) {
     // TODO: Disable Timeout Prompt
-
+    DisableAllInterrupts();
     StatusType l_status = TerminateTask_Main();
     if( l_status != E_OK ) {
+        EnableAllInterrupts();
         return l_status;
     }
     // Does the activation part
     l_status = ActivateTask_Main( TaskID );
     if( l_status != E_OK ) {
+        EnableAllInterrupts();
         return l_status;
     }
+    EnableAllInterrupts();
 
     StatusType l_status = E_OK;
     l_status = Schedule();
@@ -157,6 +162,7 @@ StatusType Schedule( void ) {
     if( IS_ON_INTERRUPT() ) {
         return E_OS_CALLEVEL;
     }
+    DisableAllInterrupts();
     // Critical Test
     if( g_active_task == NULL ) {
         LOGGER_ERROR( ("Active task cannot be NULL. NEVER!\n") );
@@ -170,9 +176,7 @@ StatusType Schedule( void ) {
     // Get the highest READY task. In the worst case, it will be the idle task.
     TaskDataRefType l_highest_task = Schedule_GetHighestReadyTask();
     // If this task has a higger priority than the active one, then a context switch is on its way.
-    if( (g_active_task->state != RUNNING) || (l_highest_task->priority > g_active_task->priority) ) {
-        DisableAllInterrupts();
-
+    if( (g_active_task->state != RUNNING) || (l_highest_task->priority > g_active_task->priority) ) {        
         TaskContextRefType l_context = &(g_active_task->context);        
         SaveTaskContext( l_context );
         // If it is, we change the current active task for this one.
@@ -187,10 +191,10 @@ StatusType Schedule( void ) {
         LoadTaskContext( l_context,"Schedule");
 #else
 #error Platform not defined!
-#endif
-        EnableAllInterrupts();
+#endif        
     }
-
+    
+    EnableAllInterrupts();
     // No error, E_OK.
     return E_OK; // In theory, this return value is useless, since the method will return to another point in the stack.
 }

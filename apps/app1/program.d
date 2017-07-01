@@ -1,37 +1,35 @@
-#define LED_GREEN PORTBbits.RB0
-#define LED_YELLOW PORTBbits.RB1
-#define LED_RED PORTBbits.RB2
-#define LED_RED_READ LATBbits.LATB2
-
 TASK( task_init ) {
-    TRISBbits.TRISB0 = OUTPUT;
-    TRISBbits.TRISB1 = OUTPUT;
-    TRISBbits.TRISB2 = OUTPUT;
+	TRISB = 0x00; // Output Lower Bits
+	LATB = 0x00;
 
-    LED_GREEN = LOW;
-    LED_YELLOW = LOW;
-    LED_RED = LOW;
-    ChainTask( task_green );
+    ChainTask( task_start );
 }
 
-TASK( task_green ) {
-	while( TRUE ) {
-		LED_GREEN = HIGH;
-		ActivateTask( task_yellow );
-		LED_GREEN = LOW;
-		ActivateTask( task_yellow );		
-	}
+#define _XTAL_FREQ 64000000
+
+TASK( task_rb0 ) {
+	LATBbits.LATB0 = 1;
+	__delay_ms(1);
+	ChainTask(task_start);	
 }
 
-TASK( task_yellow ) {
-	LED_YELLOW = HIGH;
-	ActivateTask( task_red );
-	LED_YELLOW = LOW;
-	ActivateTask( task_red );
+TASK( task_rb1 ) {
+	LATBbits.LATB1 = 1;
+	__delay_ms(1);
 	TerminateTask();
 }
 
-TASK( task_red ) {
-	LED_RED = !LED_RED_READ;
+TASK( task_rb2 ) {
+	LATBbits.LATB2 = 1;
+	__delay_ms(1);
+	TerminateTask();
+}
+
+TASK( task_start ) {
+	LATB = 0;
+	__delay_ms(1);
+	ActivateTask( task_rb0 );
+	ActivateTask( task_rb1 );
+	ActivateTask( task_rb2 );
 	TerminateTask();
 }

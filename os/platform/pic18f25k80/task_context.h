@@ -8,6 +8,10 @@
 #include "../../constants.h"
 
 #define PLATFORM_CONTEXT_STACK_SIZE 31
+// Variables used to temporaly store the registers (otherwise, the value would be lost)
+extern uint8_t _wreg;
+extern uint8_t _bsr;
+extern uint8_t _status;
 
 /**Retrives the value part of the uController Stack */
 #define uControllerStackValue() ( STKPTRbits.STKPTR )
@@ -15,6 +19,9 @@
 typedef uint32_t PlatformTaskContextStackType;
 typedef PlatformTaskContextStackType* PlatformTaskContextStackRefType;
 
+/**
+ * PIC18F25K80 Data struct to store task context information
+ */
 typedef struct {
     uint8_t work;
     uint8_t bsr;
@@ -42,6 +49,8 @@ StatusType ResetTaskContext( PlatformTaskContextRefType Context, CallbackType Ca
 #define POP() asm(" POP")
 #endif
 
+
+
 /**
  * @brief Clears the uController's stack and saves it in the current task stack.
  *
@@ -49,9 +58,9 @@ StatusType ResetTaskContext( PlatformTaskContextRefType Context, CallbackType Ca
  */
 #define PlatformSaveTaskContext( TaskContextRef )                               \
 do {                                                                            \
-    TaskContextRef->work = WREG;                                                \// Saving Work Register
-    TaskContextRef->bsr = BSR;                                                  \// Saving Bank Select Register
-    TaskContextRef->status = STATUS;                                            \// Saving Status Register
+    TaskContextRef->work = _wreg;                                               \// Saving Work Register
+    TaskContextRef->bsr = _bsr;                                                 \// Saving Bank Select Register
+    TaskContextRef->status = _status;                                           \// Saving Status Register
     PlatformTaskContextStackRefType stack = (TaskContextRef->stack);            \// Shortcut to the stack
     while( uControllerStackValue() > 0 ) {                                      \// Loops Through the values on the Stack
         uint8_t i = TaskContextRef->stack_top++;                                \//     Gets the position for the local stack and then increases the top of the local stack
@@ -85,9 +94,9 @@ do {                                                                            
         asm("MOVF (("FuncNameStr"@tosl) and 0FFh),w");                          \
         asm("MOVWF TOSL");                                                      \
     }                                                                           \
-    WREG = TaskContextRef->work;                                                \// Loading the Work Register
-    BSR = TaskContextRef->bsr;                                                  \// Loading Bank Select Register
-    STATUS = TaskContextRef->status;                                            \// Loading Status Register
+    _wreg = TaskContextRef->work;                                               \// Loading the Work Register
+    _bsr = TaskContextRef->bsr;                                                 \// Loading Bank Select Register
+    _status = TaskContextRef->status;                                           \// Loading Status Register
 } while(0)
 
 #endif//PIC18F25K80_TASK_CONTEXT_H

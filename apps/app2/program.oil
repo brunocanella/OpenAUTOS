@@ -20,19 +20,19 @@ CPU Linux {
 		AUTOSTART = FALSE;
 	};
 	TASK task_rb1 {
-		PRIORITY = 2;
+		PRIORITY = 1;
 		SCHEDULE = FULL;
 		ACTIVATION = 1;
 		AUTOSTART = FALSE;
 	};
 	TASK task_rb2 {
-		PRIORITY = 3;
+		PRIORITY = 1;
 		SCHEDULE = FULL;
 		ACTIVATION = 1;
 		AUTOSTART = FALSE;
 	};
-	TASK task_start {
-		PRIORITY = 5;
+	TASK task_off {
+		PRIORITY = 1;
 		SCHEDULE = FULL;
 		ACTIVATION = 1;
 		AUTOSTART = FALSE;

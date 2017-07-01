@@ -33,7 +33,13 @@ typedef struct SResourceDataType {
 /**Type for pointers of the ResourceDataType*/
 typedef ResourceDataType* ResourceDataRefType;
 
+/**
+ * Initializes an empty List of resource Data.
+ */
 void InitializeResourceDataList( ResourceDataRefType List );
+/**
+ * Moves a global resource data to the global list of resources. It also initializes this node.
+ */
 void AddResourceDataToResources( ResourceDataRefType Resource, ResourceType ResID, ResourceDataPriorityType Priority );
 
 /**
