@@ -409,6 +409,50 @@ void timer1_isr() {
 /////////////////////////////////////////////////////////////////////////TIMER1
 
 ///////////////////////////////////////////////////////////////////////////////
+/// TIMER3
+///////////////////////////////////////////////////////////////////////////////
+void timer3_reset( uint16_t a_delay ) {
+    // Prepara a quantidade de ciclos para atrasar
+    uint16_t l_timer = 65535u - a_delay;
+    // Seta no timer a quantidade de ciclos de atraso
+    WRITETIMER3( l_timer );
+    // Ativa o timer3 para iniciar a contagem
+    T3CONbits.TMR3ON = 1;
+}
+
+static callback_isr_t _timer3_callback;
+asm("GLOBAL __timer3_callback");
+void timer3_initialize( callback_isr_t timer3_callback ) {
+    T3CONbits.TMR3CS = 0b00;  // Timer3 Clock Source = FOSC/4
+    T3CONbits.T3CKPS = 0b11;  // Timer3 Input Clock Prescale = 1:8
+    T3CONbits.SOSCEN = 0b0;   // SOSC Oscillator Enable = Disabled
+    T3CONbits.nT3SYNC = 0b00; // Timer3 External Clock Input Synchronization = This bit is ignored. Timer3 uses the internal clock when TMR3CS<1:0> = 0x.
+    T3CONbits.RD16 = 0b1;     // 16-Bit Read/Write Mode Enable = Enables register read/write of Timer3 in one 16-bit operation
+    
+    T3GCONbits.TMR3GE = 0b0;  // Timer3 Gate Enable = Timer3 counts regardless of Timer3 gate function
+    
+    timer3_reset( 0xFFFF );   // Resets the timer
+    _timer3_callback = timer3_callback;
+    
+    PIR2bits.TMR3IF = 0;      // Timer3 Interrupt Flag = Off
+    PIE2bits.TMR3IE = 1;      // Timer3 Interrupt Enable = True
+    
+    INTCONbits.PEIE = 1;
+    
+    T3CONbits.TMR3ON = 0;     // Timer3 On = Start Disabled
+}
+
+void timer3_isr() {
+    T3CONbits.TMR3ON = 0;
+    if( _timer3_callback != NULL ) {
+        _timer3_callback();
+    }
+    // Clear Timer3 Interruption Flag
+    PIR2bits.TMR3IF = 0;
+}
+/////////////////////////////////////////////////////////////////////////TIMER1
+
+///////////////////////////////////////////////////////////////////////////////
 /// PWM
 ///////////////////////////////////////////////////////////////////////////////
 void pwm0_initialize() {
@@ -498,13 +542,13 @@ void rm_init( relampago_ptr_t a_rc ) {
 #define VOLANTE_OFFSET 0
 void rm_set_servo_volante( relampago_ptr_t a_marquinhos ) {    
     switch( a_marquinhos->volante_cmd ) {
-        case 'G': a_marquinhos->volante = 2000 + VOLANTE_OFFSET; break; // Left Forward >> Esquerda 100% >> 1.0ms
-        case 'L': a_marquinhos->volante = 2333 + VOLANTE_OFFSET; break; // Left         >> Esquerda  66%
-        case 'H': a_marquinhos->volante = 2666 + VOLANTE_OFFSET; break; // Left Back    >> Esquerda  33%
+        case 'G': a_marquinhos->volante = 3666 + VOLANTE_OFFSET; break; // Left Forward >> Esquerda 100% >> 1.0ms
+        case 'L': a_marquinhos->volante = 3444 + VOLANTE_OFFSET; break; // Left         >> Esquerda  66%
+        case 'H': a_marquinhos->volante = 3222 + VOLANTE_OFFSET; break; // Left Back    >> Esquerda  33%
         case 'B': a_marquinhos->volante = 3000 + VOLANTE_OFFSET; break; // Back         >> Neutro     0% >> 1.5ms
-        case 'J': a_marquinhos->volante = 3333 + VOLANTE_OFFSET; break; // Right        >> Direita   33%
-        case 'R': a_marquinhos->volante = 3666 + VOLANTE_OFFSET; break; // Right        >> Direita   66%
-        case 'I': a_marquinhos->volante = 4000 + VOLANTE_OFFSET; break; // Right        >> Direita  100% >> 2.0ms
+        case 'J': a_marquinhos->volante = 2778 + VOLANTE_OFFSET; break; // Right        >> Direita   33%
+        case 'R': a_marquinhos->volante = 2556 + VOLANTE_OFFSET; break; // Right        >> Direita   66%
+        case 'I': a_marquinhos->volante = 2334 + VOLANTE_OFFSET; break; // Right        >> Direita  100% >> 2.0ms
         default : a_marquinhos->volante = 3000 + VOLANTE_OFFSET;
     }
     
@@ -547,11 +591,17 @@ void rm_set_pwm_velocidade( relampago_ptr_t a_marquinhos ) {
 relampago_t marquinhos;
 
 void isr_extra() {
+	// USART RX
     if( PIE1bits.RCIE == HIGH && PIR1bits.RCIF == HIGH ) {
         usart_receive_interrupt_isr();
     }
+    // TIMER1
     if( PIE1bits.TMR1IE && PIR1bits.TMR1IF ) {
         timer1_isr();
+    }
+    // TIMER3
+    if( PIE2bits.TMR3IE && PIR2bits.TMR3IF ) {
+        timer3_isr();
     }
 }
 
@@ -579,6 +629,10 @@ void isr_timer1_callback() {
     _volante_duty = !_volante_duty;
 }
 
+#define MODO_PISCA_ESQ (0b00000010)
+#define MODO_PISCA_DIR (0b00000001)
+#define MODO_PISCA_ALL (0b00000011)
+
 #define LED_FREIO		LATBbits.LATB1
 #define LED_PISCA_ESQ	LATBbits.LATB7
 #define LED_PISCA_DIR	LATBbits.LATB6
@@ -590,6 +644,29 @@ void isr_timer1_callback() {
 #define LED_PISCA_DIR_READ		PORTBbits.RB6
 #define LED_FAROL_READ			PORTBbits.RB3
 #define LED_FAROL_MILHA_READ 	PORTBbits.RB2
+
+static uint8_t _timer3_counter = 0;
+static uint8_t _timer3_pisca_modo = 0;
+void isr_timer3_callback() {
+    _timer3_counter++;
+    if( _timer3_counter >= 20 ) {
+        LATBbits.LATB2 = !PORTBbits.RB2;
+        _timer3_counter = 0;
+
+        if( _timer3_pisca_modo == MODO_PISCA_ESQ ) {
+        	LED_PISCA_ESQ = !LED_PISCA_ESQ_READ;
+        } else
+        if( _timer3_pisca_modo == MODO_PISCA_DIR ) {
+        	LED_PISCA_DIR = !LED_PISCA_DIR_READ;
+        } else
+        if( _timer3_pisca_modo == MODO_PISCA_ALL ) {        	
+        	LED_PISCA_DIR = !LED_PISCA_ESQ_READ;
+        	LED_PISCA_ESQ = !LED_PISCA_ESQ_READ;
+        } else {
+        }
+    }
+    timer3_reset( 50000ul );
+}
 
 void setup_portas() {
     // Saidas
@@ -615,11 +692,15 @@ TASK( task_init ) {
     // 40000 ciclos = 20 ms
     timer1_initialize( isr_timer1_callback );
     timer1_reset( 0xFFFF );
+
+    timer3_initialize( isr_timer3_callback );
+    timer3_reset( 50000ul );       
+    _timer3_counter = 0;
     
     pwm5_initialize(); // Velocidade -> Frente
     pwm5_set_duty(0);    
     pwm2_initialize(); // Velocidade -> Re    
-    pwm5_set_duty(0);
+    pwm2_set_duty(0);
 
     rm_init( &marquinhos );
 
@@ -710,19 +791,23 @@ TASK( task_seta ) {
 		if( l_event & EVENT_PE_ON ) {
 			ClearEvent( EVENT_PE_ON );
 			LED_PISCA_ESQ = TRUE;
+			_timer3_pisca_modo |= MODO_PISCA_ESQ;
 		} else
 		if( l_event & EVENT_PE_OFF ) {
 			ClearEvent( EVENT_PE_OFF );
 			LED_PISCA_ESQ = FALSE;
+			_timer3_pisca_modo &= ~MODO_PISCA_ESQ;
 		} else
 		if( l_event & EVENT_PD_ON ) {
 			ClearEvent( EVENT_PD_ON );
 			LED_PISCA_DIR = TRUE;
+			_timer3_pisca_modo |= MODO_PISCA_DIR;
 		} else
 		if( l_event & EVENT_PD_OFF ) {
 			ClearEvent( EVENT_PD_OFF );
 			LED_PISCA_DIR = FALSE;
-		}		
+			_timer3_pisca_modo &= ~MODO_PISCA_DIR;
+		}
 	}
 }
 
