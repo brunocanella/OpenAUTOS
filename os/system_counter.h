@@ -3,6 +3,16 @@
 
 #include "types.h"
 
+#if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
+#include "platform/pic18f25k80/system_counter.h"
+#else
+#error Platform not declared
+#endif
+
+#define StopScheduler PlatformStopScheduler
+#define ResumeScheduler PlatformResumeScheduler
+#define ReturnResumeScheduler(STATUS) ResumeScheduler();return (STATUS)
+
 /**
  * Initializes the internal system counter
  */

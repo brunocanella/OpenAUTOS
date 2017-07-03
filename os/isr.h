@@ -2,6 +2,7 @@
 #define OS_ISR_H
 
 #if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
+#include <xc.h>
 #define ISR() void interrupt isr_os(void)
 #define ISR_ENTER() do{ _wreg = WREG; _bsr = BSR; _status = STATUS; }while(0)
 #define ISR_LEAVE() do{ STATUS = _status; BSR = _bsr; WREG = _wreg; }while(0)
@@ -16,6 +17,8 @@
 // Save/Load Context
 #include "task_context.h"
 
+void (*_isr_extra)(void) = NULL;
+asm("GLOBAL __isr_extra");
 ISR() {
     ISR_ENTER();
 	if( HasInterruptSystemCounter() ) {		
@@ -56,6 +59,9 @@ ISR() {
 		TimeoutRoutineSystemCounter();
 		ResetSystemCounter();
 	}
+    if( _isr_extra != NULL ) {
+        _isr_extra();
+    }
     ISR_LEAVE();
 }
 

@@ -2,7 +2,8 @@
 #define OS_TASK_H
 
 #include "constants.h"
-#include "osek/tasks.h"
+#include "osek/tasks.h"   // TaskType
+#include "osek/events.h"  // EventMaskType
 #include "task_context.h"
 #include "resource.h"
 
@@ -14,6 +15,14 @@ extern const uint8_t TASKS_TOTAL;
 typedef uint8_t TaskPriorityType;
 /**Type for task callback method*/
 typedef CallbackType TaskCallbackType;
+
+typedef struct SEventData {                                 ///< Groups all the event-related variables of a task
+        EventMaskType flag;                                 ///< Used by SetEvent to flag an event.
+        EventMaskType wait;                                 ///< Used by WaitEvent to flag an event wait.
+} EventsDataType;
+
+typedef EventsDataType* EventsDataTypeRef;
+
 
 /**
  * This type represents a Task in the operating system.
@@ -27,6 +36,7 @@ typedef struct STaskDataType {
 	TaskCallbackType callback;								///< The "body" of the task.
 	struct STaskDataType* next_task_same_priority;			///< Links together tasks that have the same priority.    	
     ResourceDataType resources;                             ///< Keeps a stack of the resources allocated, in order to know the next resource that shall be released.
+    EventsDataType events;                                  ///< Groups all the event-related variables of a task
 } TaskDataType;
 /**A pointer type for tasks*/
 typedef TaskDataType* TaskDataRefType;

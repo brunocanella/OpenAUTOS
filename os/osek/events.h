@@ -2,8 +2,9 @@
 #define OSEK_EVENTS_H
 
 #include "types.h"
+#include "tasks.h"
 
-typedef int EventMaskType;
+typedef uint8_t EventMaskType;
 
 typedef EventMaskType* EventMaskRefType;
 
@@ -12,7 +13,7 @@ typedef EventMaskType* EventMaskRefType;
  *
  * @param[in] EventIdentifier Event identifier (C-identifier).
  */
-#define DeclareEvent( EventIdentifier ) extern EventMaskType ##EventIdentifier;
+#define DeclareEvent( EventIdentifier ) extern EventMaskType ##EventIdentifier
 
 /**
  * The service may be called from an interrupt service routine and from the task level, but not from hook routines.

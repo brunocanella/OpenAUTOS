@@ -13,7 +13,7 @@ ifeq ($(PLATFORM),PIC18F25K80)
 	CC = xc8
 	COMPILE = --pass1
 	INCLUDES = -I$(OS_DIR)
-	PIC_OPTIONS = -Q -G --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,+debug --addrqual=ignore -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib --output=+mcof,+elf:multilocs --stack=compiled:auto:auto:auto
+	PIC_OPTIONS = -Q -G --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,-space,+debug --addrqual=ignore -P -N255 --warn=-3 --asmlist -DXPRJ_default=default  --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,-plib --output=+mcof,+elf:multilocs --stack=compiled:auto:auto:auto
 	CFLAGS = -DPLATFORM=PIC18F25K80 --chip=18f25k80 --mode=free $(PIC_OPTIONS) $(INCLUDES)
 	OBJECT_EXTENSION := p1
 else

@@ -3,6 +3,11 @@
 
 #include "../../types.h"
 
+#include <xc.h>
+
+#define PlatformStopScheduler() do{TMR0ON = 0;}while(0)
+#define PlatformResumeScheduler() do{if(TMR0 > 65000){TMR0 -= 160;} TMR0ON = 1;}while(0)
+
 /**
  * Performs the reset of the system counter in this platform.
  */

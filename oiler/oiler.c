@@ -109,8 +109,10 @@ int main( int a_argument_count, char** a_arguments ) {
     if( os.resource_count != 0 ) {
         fprintf( l_file, "\n" );
     }
+
     // Writing the initialization code for tasks
-    fprintf( l_file, "void TASK_FUNC_IDLE() {\n\twhile( TRUE ) { Schedule(); }\n}\n\n" );
+    fprintf( l_file, "#define _XTAL_FREQ 64000000\n\n" );
+    fprintf( l_file, "void TASK_FUNC_IDLE() {\n\twhile( TRUE ) {\n#ifdef _XTAL_FREQ\n\t\t__delay_us(10);\n#endif\n\t\tSchedule();\n\t}\n}\n\n" );
     fprintf( l_file, "void InitializeTasks() {\n" );
     fprintf( l_file, "\tInitializeTaskData( g_idle, TASK_ID_IDLE, 0, READY, TASK_FUNC_IDLE );\n" );
     for( i = 0; i < os.task_count; i++ ) {

@@ -34,28 +34,27 @@ StatusType ActivateTask_Main( TaskType TaskID ) {
     return E_OK;
 }
 
+static StatusType l_status_activatetask;
 StatusType ActivateTask( TaskType TaskID ) {    
-    // TODO: Disable Timeout Prompt
-    DisableAllInterrupts();
-    StatusType l_status = ActivateTask_Main( TaskID );
-    EnableAllInterrupts();
-    if( l_status != E_OK ) {        
-        return l_status;
+    StopScheduler();
+    l_status_activatetask = ActivateTask_Main( TaskID );    
+    if( l_status_activatetask != E_OK ) {        
+        ReturnResumeScheduler(l_status_activatetask);
     }
     // Finally, calls the scheduler to see if the new task will take over
     StatusType l_status = E_OK;
     l_status = Schedule();
-    return l_status;
+    ReturnResumeScheduler(l_status);
 }
 
 StatusType TerminateTask_Main( void ) {
     // This service causes the termination of the calling task. 
     // The calling task is transferred from the running state into the suspended state.
     if( g_active_task == NULL ) {
-        LOGGER_ERROR( ("TerminateTask ERROR: Active Task is NULL\n", TaskID) );
+        LOGGER_ERROR( ("TerminateTask ERROR: Active Task is NULL\n") );
         OS_RESET();
     } else if( g_active_task->state != RUNNING ) {
-        LOGGER_DEBUG( ("TerminateTask WARNING: Active Task is not in the RUNNING state\n", TaskID) );
+        LOGGER_DEBUG( ("TerminateTask WARNING: Active Task is not in the RUNNING state\n") );
     }
     g_active_task->state = SUSPENDED;
 
@@ -65,39 +64,34 @@ StatusType TerminateTask_Main( void ) {
     return E_OK;
 }
 
+static StatusType l_status_terminatetask;
 StatusType TerminateTask( void ) {
-    // TODO: Disable Timeout Prompt
-    DisableAllInterrupts();
-    StatusType l_status = TerminateTask_Main();
-    EnableAllInterrupts();
-    if( l_status != E_OK ) {        
-        return l_status;
+    StopScheduler();
+    l_status_terminatetask = TerminateTask_Main();    
+    if( l_status_terminatetask != E_OK ) {        
+        ReturnResumeScheduler(l_status_terminatetask);
     }
 
     StatusType l_status = E_OK;
     l_status = Schedule();
-    return l_status;
+    ReturnResumeScheduler(l_status);
 }
 
+static StatusType l_status_chaintask;
 StatusType ChainTask( TaskType TaskID ) {
-    // TODO: Disable Timeout Prompt
-    DisableAllInterrupts();
-    StatusType l_status = TerminateTask_Main();
-    if( l_status != E_OK ) {
-        EnableAllInterrupts();
-        return l_status;
+    StopScheduler();
+    l_status_chaintask = TerminateTask_Main();
+    if( l_status_chaintask != E_OK ) {
+        ReturnResumeScheduler(l_status_chaintask);
     }
     // Does the activation part
-    l_status = ActivateTask_Main( TaskID );
-    if( l_status != E_OK ) {
-        EnableAllInterrupts();
-        return l_status;
+    l_status_chaintask = ActivateTask_Main( TaskID );
+    if( l_status_chaintask != E_OK ) {
+        ReturnResumeScheduler(l_status_chaintask);
     }
-    EnableAllInterrupts();
 
-    StatusType l_status = E_OK;
-    l_status = Schedule();
-    return l_status;
+    l_status_chaintask = Schedule();
+    ReturnResumeScheduler(l_status_chaintask);
 
     // @remark If the succeeding task is identical with the current task, this does not result in multiple requests. 
     // The task is not transferred to the suspended state, but will immediately become ready again.
@@ -131,24 +125,27 @@ StatusType GetTaskID( TaskRefType TaskID ) {
     return E_OK;
 }
 
-StatusType GetTaskState( TaskType TaskID, TaskStateRefType State ) { 
+StatusType GetTaskState( TaskType TaskID, TaskStateRefType State ) {
+    StopScheduler();
     for( uint8_t i = 0; i < TASKS_TOTAL; i++ ) {
         if( g_tasks[i].id == TaskID ) {
             // No error. Return State and E_OK.
             (*State) = g_tasks[i].state;
-            return E_OK;
+            ReturnResumeScheduler(E_OS_ID);
         }
     }
-    // TaskID is invalid
-    return E_OS_ID; 
+    ReturnResumeScheduler(E_OS_ID); 
 }
 
+static TaskDataRefType l_highest;
+static TaskDataRefType l_curr;
+static uint8_t schedule_gethigh;
 TaskDataRefType Schedule_GetHighestReadyTask() {
     // Start with the IDLE task as the active highest priority that is (at least) READY.
-    TaskDataRefType l_highest = g_idle;
+    l_highest = g_idle;
     // Loops through all tasks, finding the one that is READY (or RUNNING) and that has the HIGHEST priority.
-    for( uint8_t i = 0; i < TASKS_TOTAL; i++ ) {
-        TaskDataRefType l_curr = &g_tasks[i];
+    for( schedule_gethigh = 0; schedule_gethigh < TASKS_TOTAL; schedule_gethigh++ ) {
+        l_curr = &g_tasks[schedule_gethigh];
         if( ( l_curr->state == READY ) && l_curr->priority > l_highest->priority ) {
             l_highest = l_curr;            
         }
@@ -157,12 +154,14 @@ TaskDataRefType Schedule_GetHighestReadyTask() {
     return l_highest;
 }
 
+static TaskContextRefType l_context;
+static TaskDataRefType l_highest_task;
 StatusType Schedule( void ) {
+    StopScheduler();
     // [Extended] Call at interrupt level, E_OS_CALLEVEL
     if( IS_ON_INTERRUPT() ) {
-        return E_OS_CALLEVEL;
+        ReturnResumeScheduler(E_OS_CALLEVEL);
     }
-    DisableAllInterrupts();
     // Critical Test
     if( g_active_task == NULL ) {
         LOGGER_ERROR( ("Active task cannot be NULL. NEVER!\n") );
@@ -174,10 +173,10 @@ StatusType Schedule( void ) {
     // }   
     
     // Get the highest READY task. In the worst case, it will be the idle task.
-    TaskDataRefType l_highest_task = Schedule_GetHighestReadyTask();
+    l_highest_task = Schedule_GetHighestReadyTask();
     // If this task has a higger priority than the active one, then a context switch is on its way.
     if( (g_active_task->state != RUNNING) || (l_highest_task->priority > g_active_task->priority) ) {        
-        TaskContextRefType l_context = &(g_active_task->context);        
+        l_context = &(g_active_task->context);        
         SaveTaskContext( l_context );
         // If it is, we change the current active task for this one.
         if( g_active_task->state == RUNNING ) {
@@ -193,8 +192,6 @@ StatusType Schedule( void ) {
 #error Platform not defined!
 #endif        
     }
-    
-    EnableAllInterrupts();
     // No error, E_OK.
-    return E_OK; // In theory, this return value is useless, since the method will return to another point in the stack.
+    ReturnResumeScheduler(E_OK); // In theory, this return value is useless, since the method will return to another point in the stack.
 }

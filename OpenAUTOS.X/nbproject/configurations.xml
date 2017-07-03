@@ -28,6 +28,7 @@
           <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/osek/tasks.c</itemPath>
           <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/osek/hooks.h</itemPath>
           <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/osek/interrupts.h</itemPath>
+          <itemPath>/home/bruno/Documents/UFSC/TCC/TccBruno/OpenAUTOS/os/osek/events.c</itemPath>
         </logicalFolder>
         <logicalFolder name="platform" displayName="platform" projectFiles="true">
           <logicalFolder name="pic18f25k80" displayName="pic18f25k80" projectFiles="true">
@@ -113,7 +114,7 @@
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="identifier-length" value="255"/>
         <property key="local-generation" value="false"/>
-        <property key="operation-mode" value="pro"/>
+        <property key="operation-mode" value="free"/>
         <property key="opt-xc8-compiler-strict_ansi" value="false"/>
         <property key="optimization-assembler" value="true"/>
         <property key="optimization-assembler-files" value="true"/>
@@ -131,7 +132,7 @@
         <property key="use-iar" value="false"/>
         <property key="verbose" value="false"/>
         <property key="warning-level" value="-3"/>
-        <property key="what-to-do" value="ignore"/>
+        <property key="what-to-do" value="request"/>
       </HI-TECH-COMP>
       <HI-TECH-LINK>
         <property key="additional-options-checksum" value=""/>
@@ -554,7 +555,7 @@
       </Simulator>
       <XC8-config-global>
         <property key="advanced-elf" value="true"/>
-        <property key="output-file-format" value="-mcof,+elf"/>
+        <property key="output-file-format" value="+mcof,-elf"/>
         <property key="stack-size-high" value="auto"/>
         <property key="stack-size-low" value="auto"/>
         <property key="stack-size-main" value="auto"/>

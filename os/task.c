@@ -38,6 +38,8 @@ void InitializeTaskData(
     Task->state = State;
     Task->callback = Callback;    
     Task->next_task_same_priority = Task;
+    Task->events.flag = 0;
+    Task->events.wait = 0;
     ResetTaskContext( &Task->context, Callback );
     InitializeResourceDataList( &Task->resources );
 }

@@ -13,6 +13,7 @@
 #include "osek/os.h"
 #include "osek/tasks.h"
 #include "osek/resources.h"
+#include "osek/events.h"
 
 #if defined(PLATFORM) &&  PLATFORM == PIC18F25K80
 #include <xc.h>
