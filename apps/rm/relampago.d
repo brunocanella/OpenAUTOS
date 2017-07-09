@@ -495,8 +495,10 @@ void pwm2_set_duty( uint16_t a_duty ) {
 ///////////////////////////////////////////////////////////////////////////////
 /// RELAMPAGO MARQUINHOS
 ///////////////////////////////////////////////////////////////////////////////
+#define COMANDO_SIZE_MAX 7
 typedef struct relampago_s {
-	uint8_t comando;
+	char comando[COMANDO_SIZE_MAX];
+    uint8_t comando_index;
 	uint8_t freio_re;
 	uint8_t volante_cmd;
     uint16_t volante;
@@ -530,45 +532,23 @@ void rm_set_pwm_velocidade( relampago_ptr_t a_rc );
 static const uint8_t _CMD_VOLANTE[] = { 'B','L','R','G','I','H','J','S','F' };
 static const uint8_t _CMD_VELOCIDADE[] = { '0', '1','2','3','4','5','6','7','8','9','q' };
 
-void rm_init( relampago_ptr_t a_rc ) {
-    a_rc->comando = 0;
+void rm_init( relampago_ptr_t a_rc ) {    
+    memset( a_rc->comando, '\0', COMANDO_SIZE_MAX );
+    a_rc->comando_index = 0;
     a_rc->freio_re = 0;
-    a_rc->volante_cmd = 'B';
+    a_rc->volante_cmd = 50;
     rm_set_servo_volante( a_rc ); // a_rc->volante = 3000 + VOLANTE_OFFSET;
-	a_rc->velocidade_cmd = '0';
+	a_rc->velocidade_cmd = 0;
     rm_set_pwm_velocidade( a_rc ); // a_rc->velocidade = 0;
 }
 
 #define VOLANTE_OFFSET 0
-void rm_set_servo_volante( relampago_ptr_t a_marquinhos ) {    
-    switch( a_marquinhos->volante_cmd ) {
-        case 'G': a_marquinhos->volante = 3666 + VOLANTE_OFFSET; break; // Left Forward >> Esquerda 100% >> 1.0ms
-        case 'L': a_marquinhos->volante = 3444 + VOLANTE_OFFSET; break; // Left         >> Esquerda  66%
-        case 'H': a_marquinhos->volante = 3222 + VOLANTE_OFFSET; break; // Left Back    >> Esquerda  33%
-        case 'B': a_marquinhos->volante = 3000 + VOLANTE_OFFSET; break; // Back         >> Neutro     0% >> 1.5ms
-        case 'J': a_marquinhos->volante = 2778 + VOLANTE_OFFSET; break; // Right        >> Direita   33%
-        case 'R': a_marquinhos->volante = 2556 + VOLANTE_OFFSET; break; // Right        >> Direita   66%
-        case 'I': a_marquinhos->volante = 2334 + VOLANTE_OFFSET; break; // Right        >> Direita  100% >> 2.0ms
-        default : a_marquinhos->volante = 3000 + VOLANTE_OFFSET;
-    }
-    
+void rm_set_servo_volante( relampago_ptr_t a_marquinhos ) {   
+    a_marquinhos->volante = 4000 - ( 20 * a_marquinhos->volante_cmd ) + VOLANTE_OFFSET;
 }
 
-void rm_set_pwm_velocidade( relampago_ptr_t a_marquinhos ) {    
-    switch( a_marquinhos->velocidade_cmd ) {
-        case 'q': a_marquinhos->velocidade = 250 << 2; break; // Throttle 100% (Full Throttle :D)
-        case '9': a_marquinhos->velocidade = 225 << 2; break; // Throttle  90%
-        case '8': a_marquinhos->velocidade = 200 << 2; break; // Throttle  80%
-        case '7': a_marquinhos->velocidade = 175 << 2; break; // Throttle  70%
-        case '6': a_marquinhos->velocidade = 150 << 2; break; // Throttle  60%
-        case '5': a_marquinhos->velocidade = 125 << 2; break; // Throttle  50%
-        case '4': a_marquinhos->velocidade = 100 << 2; break; // Throttle  40%
-        case '3': a_marquinhos->velocidade =  75 << 2; break; // Throttle  30%
-        case '2': a_marquinhos->velocidade =  50 << 2; break; // Throttle  20%
-        case '1': a_marquinhos->velocidade =  25 << 2; break; // Throttle  10%
-        case '0': a_marquinhos->velocidade =   0 << 2; break; // Throttle   0%
-		default: a_marquinhos->velocidade = 0;
-    }    
+void rm_set_pwm_velocidade( relampago_ptr_t a_marquinhos ) {
+    a_marquinhos->velocidade = a_marquinhos->velocidade_cmd * 10;
 }
 ///////////////////////////////////////////////////////////RELAMPAGO MARQUINHOS
 
@@ -605,17 +585,28 @@ void isr_extra() {
     }
 }
 
+static char rx_cmd;
 void isr_rx_callback() {
-	marquinhos.comando = usart_receive_interrupt_get_byte();	
-	SetEvent( task_rx, EVENT_RX );
+	 rx_cmd = usart_receive_interrupt_get_byte();
+     if( rx_cmd == ';') {
+        marquinhos.comando[marquinhos.comando_index] = '\0';
+        marquinhos.comando_index = 0;
+        SetEvent( task_rx, EVENT_RX );
+     } else {
+        marquinhos.comando[marquinhos.comando_index] = rx_cmd;
+        marquinhos.comando_index++;
+        if( marquinhos.comando_index >= COMANDO_SIZE_MAX ) {
+            marquinhos.comando_index = 0;
+        }
+     }
 }
 
 #define VOLANTE_SERVO LATBbits.LB4
 #define VOLANTE_LAZY_CYCLE 40000ul
 
-uint16_t _volante_duty_cycle = 0ul;
-uint16_t _volante_lazy_cycle = VOLANTE_LAZY_CYCLE;
-uint8_t _volante_duty = 1;
+static uint16_t _volante_duty_cycle = 0ul;
+static uint16_t _volante_lazy_cycle = VOLANTE_LAZY_CYCLE;
+static uint8_t _volante_duty = 1;
 void isr_timer1_callback() {
     // Duty
     if( _volante_duty ) {
@@ -649,10 +640,8 @@ static uint8_t _timer3_counter = 0;
 static uint8_t _timer3_pisca_modo = 0;
 void isr_timer3_callback() {
     _timer3_counter++;
-    if( _timer3_counter >= 20 ) {
-        LATBbits.LATB2 = !PORTBbits.RB2;
+    if( _timer3_counter >= 20 ) {        
         _timer3_counter = 0;
-
         if( _timer3_pisca_modo == MODO_PISCA_ESQ ) {
         	LED_PISCA_ESQ = !LED_PISCA_ESQ_READ;
         } else
@@ -717,93 +706,115 @@ TASK( task_init ) {
 	TerminateTask();
 }
 
+#include <string.h>
+#include <stdlib.h>
+
+static char* rx_str;
+static int8_t task_rx_v;
 TASK( task_rx ) {
-	while( TRUE ) {
-		WaitEvent( EVENT_RX );
-		ClearEvent( EVENT_RX );
-
-		// Discarte de comandos
-	    if( marquinhos.comando == 'S' || 
-	    	marquinhos.comando == 'F' || 
-	    	marquinhos.comando == 'D' ) { 
-	    	continue; 
-		}
-	    
-	    // Comandos do Volante
-	    for( uint8_t i = 0; i < sizeof(_CMD_VOLANTE); i++ ) {
-	        if( marquinhos.comando == _CMD_VOLANTE[i] ) {
-	        	marquinhos.volante_cmd = marquinhos.comando;
-	        	SetEvent( task_volante, EVENT_VOLANTE );
-	            continue;
-	        }
-	    }
-
-	    // Comandos de Velocidade
-	    for( uint8_t i = 0; i < sizeof(_CMD_VELOCIDADE); i++ ) {
-	        if( marquinhos.comando == _CMD_VELOCIDADE[i] ) {
-	        	marquinhos.velocidade_cmd = marquinhos.comando;
-	            SetEvent( task_velocidade, EVENT_VELOCIDADE );
-	            continue;
-	        }
-	    }
-
-		// LEDs
-		if( marquinhos.comando == 'W' ) { SetEvent( task_seta   , EVENT_PE_ON   ); } else
-		if( marquinhos.comando == 'w' ) { SetEvent( task_seta   , EVENT_PE_OFF  ); } else
-	    if( marquinhos.comando == 'U' ) { SetEvent( task_seta   , EVENT_PD_ON   ); } else
-	    if( marquinhos.comando == 'u' ) { SetEvent( task_seta   , EVENT_PD_OFF  ); } else
-	    if( marquinhos.comando == 'V' ) { SetEvent( task_farol  , EVENT_FAR_ON  ); } else
-	    if( marquinhos.comando == 'v' ) { SetEvent( task_farol  , EVENT_FAR_OFF ); } else
-	    if( marquinhos.comando == 'X' ) { SetEvent( task_sentido, EVENT_MOV_R   ); } else
-	    if( marquinhos.comando == 'x' ) { SetEvent( task_sentido, EVENT_MOV_F   ); }
-	}
+    while( TRUE ) {
+        WaitEvent( EVENT_RX );
+        ClearEvent( EVENT_RX );
+        
+        rx_str = strstr( marquinhos.comando, "SE" );
+        if( rx_str != NULL ) {
+            task_rx_v = atoi( (rx_str+2) );
+            SetEvent( task_seta, task_rx_v ? EVENT_PE_ON : EVENT_PE_OFF );
+            continue;
+        }
+        rx_str = strstr( marquinhos.comando, "SD" );
+        if( rx_str != NULL ) {
+            task_rx_v = atoi( (rx_str+2) );
+            SetEvent( task_seta, task_rx_v ? EVENT_PD_ON : EVENT_PD_OFF );
+            continue;
+        }
+        rx_str = strstr( marquinhos.comando, "FA" );
+        if( rx_str != NULL ) {
+            task_rx_v = atoi( (rx_str+2) );
+            SetEvent( task_farol, task_rx_v ? EVENT_FAR_ON : EVENT_FAR_OFF );
+            continue;
+        }
+        rx_str = strstr( marquinhos.comando, "FM" );
+        if( rx_str != NULL ) {
+            task_rx_v = atoi( (rx_str+2) );
+            SetEvent( task_farol, task_rx_v ? EVENT_FAR_MILHA_ON : EVENT_FAR_MILHA_OFF );
+            continue;
+        }
+        rx_str = strstr( marquinhos.comando, "V" );
+        if( rx_str != NULL ) {
+            task_rx_v = atoi( (rx_str+1) );
+            // Seta velocidade (descarta sentido)
+            if( (0b10000000 & task_rx_v) > 0 ) {
+                marquinhos.velocidade_cmd = (~task_rx_v) + 0b00000001;
+            } else {
+                marquinhos.velocidade_cmd = 0b01111111 & task_rx_v;
+            }
+            // Altera a velocidade
+            SetEvent( task_velocidade, EVENT_VELOCIDADE );
+            // Verifica se precisa mudar a ponte h
+            if( task_rx_v >= 0 && marquinhos.freio_re == 1 ) {
+                SetEvent( task_sentido, EVENT_MOV_F );
+            } else if( task_rx_v < 0 && marquinhos.freio_re == 0 ) {
+                SetEvent( task_sentido, EVENT_MOV_R );
+            }
+            continue;
+        }
+        rx_str = strstr( marquinhos.comando, "D" );
+        if( rx_str != NULL ) {
+            task_rx_v = atoi( (rx_str+1) );
+            marquinhos.volante_cmd = 0b01111111 & task_rx_v;
+            SetEvent( task_volante, EVENT_VOLANTE );
+            continue;
+        }
+    }
 }
 
+EventMaskType task_farol_event;
 TASK( task_farol ) {
 	while( TRUE ) {
-		WaitEvent( EVENT_FAR_MILHA_ON | EVENT_FAR_MILHA_OFF | EVENT_FAR_ON | EVENT_FAR_OFF );
-		EventMaskType l_event;
-		GetEvent( task_farol, &l_event );
-		if( l_event & EVENT_FAR_MILHA_ON ) {
+		WaitEvent( EVENT_FAR_MILHA_ON | EVENT_FAR_MILHA_OFF | EVENT_FAR_ON | EVENT_FAR_OFF );		
+		GetEvent( task_farol, &task_farol_event );
+		if( task_farol_event & EVENT_FAR_MILHA_ON ) {
 			ClearEvent( EVENT_FAR_MILHA_ON );
 			LED_FAROL_MILHA = TRUE;
 		} else
-		if( l_event & EVENT_FAR_MILHA_OFF ) {
+		if( task_farol_event & EVENT_FAR_MILHA_OFF ) {
 			ClearEvent( EVENT_FAR_MILHA_OFF );
 			LED_FAROL_MILHA = FALSE;
 		} else
-		if( l_event & EVENT_FAR_ON ) {
+		if( task_farol_event & EVENT_FAR_ON ) {
 			ClearEvent( EVENT_FAR_ON );
 			LED_FAROL = TRUE;
 		} else
-		if( l_event & EVENT_FAR_OFF ) {
+		if( task_farol_event & EVENT_FAR_OFF ) {
 			ClearEvent( EVENT_FAR_OFF );
 			LED_FAROL = FALSE;
 		}
 	}
 }
 
+EventMaskType task_seta_event;
 TASK( task_seta ) {
 	while( TRUE ) {
 		WaitEvent( EVENT_PE_ON | EVENT_PE_OFF | EVENT_PD_ON | EVENT_PD_OFF );
-		EventMaskType l_event;
-		GetEvent( task_seta, &l_event );
-		if( l_event & EVENT_PE_ON ) {
+		
+		GetEvent( task_seta, &task_seta_event );
+		if( task_seta_event & EVENT_PE_ON ) {
 			ClearEvent( EVENT_PE_ON );
 			LED_PISCA_ESQ = TRUE;
 			_timer3_pisca_modo |= MODO_PISCA_ESQ;
 		} else
-		if( l_event & EVENT_PE_OFF ) {
+		if( task_seta_event & EVENT_PE_OFF ) {
 			ClearEvent( EVENT_PE_OFF );
 			LED_PISCA_ESQ = FALSE;
 			_timer3_pisca_modo &= ~MODO_PISCA_ESQ;
 		} else
-		if( l_event & EVENT_PD_ON ) {
+		if( task_seta_event & EVENT_PD_ON ) {
 			ClearEvent( EVENT_PD_ON );
 			LED_PISCA_DIR = TRUE;
 			_timer3_pisca_modo |= MODO_PISCA_DIR;
 		} else
-		if( l_event & EVENT_PD_OFF ) {
+		if( task_seta_event & EVENT_PD_OFF ) {
 			ClearEvent( EVENT_PD_OFF );
 			LED_PISCA_DIR = FALSE;
 			_timer3_pisca_modo &= ~MODO_PISCA_DIR;
@@ -831,18 +842,19 @@ TASK( task_velocidade ) {
 	}
 }
 
+EventMaskType task_sentido_event;
 TASK( task_sentido ) {
 	while( TRUE ) {
 		WaitEvent( EVENT_MOV_F | EVENT_MOV_R );
-		EventMaskType l_event;
-		GetEvent( task_sentido, &l_event );
+		
+		GetEvent( task_sentido, &task_sentido_event );
 		// Frente
-		if( l_event & EVENT_MOV_F ) {
+		if( task_sentido_event & EVENT_MOV_F ) {
 			ClearEvent( EVENT_MOV_F );
 			marquinhos.freio_re = FALSE;	
 		} else
 		// Re
-		if( l_event & EVENT_MOV_R ) {
+		if( task_sentido_event & EVENT_MOV_R ) {
 			ClearEvent( EVENT_MOV_R );
 			marquinhos.freio_re = TRUE;
 		}

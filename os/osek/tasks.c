@@ -6,20 +6,21 @@
 #include "../interrupts.h"
 #include "interrupts.h"
 
+static uint8_t _at_main_id_found;
 StatusType ActivateTask_Main( TaskType TaskID ) {
     // Searches for the task with the given ID
-    uint8_t l_task_id_found = FALSE;
+    _at_main_id_found = FALSE;
     TaskDataRefType l_task_data_ref = NULL;
     for( uint8_t i = 0; i < TASKS_TOTAL; i++ ) {
         if( g_tasks[i].id == TaskID ) {
-            l_task_id_found = TRUE;
+            _at_main_id_found = TRUE;
             if( g_tasks[i].state == SUSPENDED ) {
                 l_task_data_ref = &g_tasks[i];
                 break;
             }
         }
     }
-    if( l_task_id_found == FALSE ) {
+    if( _at_main_id_found == FALSE ) {
         LOGGER_ERROR( ("TaskId \"%d\" not found\n", TaskID) );
         return E_OS_ID;
     } else if ( l_task_data_ref == NULL ) {

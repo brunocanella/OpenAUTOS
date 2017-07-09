@@ -1,0 +1,1 @@
+Iniciando tarefas de maior prioridade
