@@ -23,9 +23,9 @@ This other video, at an earlier stage, shows the custom board being tested: http
 
 ## A little backstory on Little McQueen
 
-One week prior to my thesis defense, all I had to show to the judging committee OpenAUTOS was a board with some blinking lights, that were supposed to illustrate the activation of different functionalities of the OS. Although me and my coordinator were sure they would comprehend that the main effort was put into creating an OS from scratch, we both knew it lacked badly in the visual appeal department.
+One week prior to my thesis defense, all I had to show to the judging committee was a board with some blinking lights, that were supposed to illustrate the activation of different functionalities of the OpenAUTOS Operating System. Although me and my coordinator were sure they would comprehend that the main effort was put into creating an OS from scratch, we both knew it was lacking (badly) in the visual appeal department.
 
-Later that night, while talking to some of my friends in the computer's laboratory, I mentioned that I could program an RC car that would showcase the capabilities of the OS in a much better way than some blinking lights, but that I would not be able to deliver it with a custom board and a cellphone remote control until the day of my defense. At that moment, *Thiago Raulino Dal Pont* and *Cristiano Abreu* both offered to help me with those specific tasks.
+Later that night, while talking to some of my friends from the Robotics's laboratory, I mentioned that I could program an RC car that would showcase the capabilities of the OS in a much better way than what I had so far (blinking lights on a board), but that I would not be able to deliver it with a custom board and a cellphone remote control until the day of my defense. At that moment, *Thiago Raulino Dal Pont* and *Cristiano Abreu* both offered to help me with those specific tasks.
 
 From this point onward, I was developing the custom firmware for the vehicle, while guiding Cristiano and Thiago on how they should customize their parts in order to fit everything together by the end of the week.
 
